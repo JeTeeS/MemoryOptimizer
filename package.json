@@ -1,12 +1,12 @@
 {
-  "name": "dev.sleightly.template",
-  "displayName": "JS - Template",
+  "name": "dev.jetees.memoryoptimizer",
+  "displayName": "Memory Optimizer",
   "version": "0.0.1",
-  "description": "A VPM Package Template",
-  "url": "https://github.com/JustSleightly/JS-Template",
+  "description": "A tool to help you optimize your avatar's parameters",
+  "url": "https://github.com/JeTeeS/MemoryOptimizer",
   "gitDependencies": {},
   "vpmDependencies": {
-    "com.vrchat.avatars": "^3.3.0"
+    "com.vrchat.avatars": "^3.4.1"
   },
   "legacyFolders": {},
   "legacyFiles": {},
@@ -18,8 +18,8 @@
   "Template"
   ],
   "author": {
-    "name": "JustSleightly",
-    "email": "just@sleightly.dev",
-    "url": "https://just.sleightly.dev"
+    "name": "JeTeeS",
+    "email": "jetees.vr@gmail.com",
+    "url": "https://jetees.dev"
   }
 }

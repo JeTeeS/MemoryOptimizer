@@ -10,8 +10,8 @@ on:
 
 env:
   triggerUpdate: ${{ false }}
-  repoOwner: "JustSleightly"
-  repoName: "VPM-Package-Listing-Template"
+  repoOwner: "JeTeeS"
+  repoName: "MemoryOptimizer"
   repoBranch: "main"
   workflowName: "build-listing.yml"
   accessToken: ${{ secrets.VPM_TOKEN }}
