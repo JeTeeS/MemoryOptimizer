@@ -9,12 +9,12 @@ on:
   workflow_dispatch: 
 
 env:
-  triggerUpdate: ${{ false }}
+  triggerUpdate: ${{ true }}
   repoOwner: "JeTeeS"
-  repoName: "MemoryOptimizer"
+  repoName: "TES-VPM-Package-Listing"
   repoBranch: "main"
   workflowName: "build-listing.yml"
-  accessToken: ${{ secrets.VPM_TOKEN }}
+  accessToken: ${{ secrets.TESVPMPACKAGELISTING_TOKEN }}
 
 jobs:
   dispatch:
