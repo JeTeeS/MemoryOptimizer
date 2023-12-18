@@ -1,21 +1,23 @@
 {
   "name": "dev.jetees.memoryoptimizer",
   "displayName": "Memory Optimizer",
-  "version": "0.0.1",
+  "version": "0.1.0",
+  "unity" : "2022.3",
   "description": "A tool to help you optimize your avatar's parameters",
   "url": "https://github.com/JeTeeS/MemoryOptimizer",
   "gitDependencies": {},
   "vpmDependencies": {
-    "com.vrchat.avatars": "^3.4.1"
+    "com.vrchat.avatars": "^3.5.0"
   },
   "legacyFolders": {},
   "legacyFiles": {},
   "type": "tool",
   "keywords": [
-  "JustSleightly",
-  "Sleightly",
+  "TES",
+  "JeTeeS",
   "VRChat",
-  "Template"
+  "Script",
+  "Tool"
   ],
   "author": {
     "name": "JeTeeS",
