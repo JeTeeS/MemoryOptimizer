@@ -7,11 +7,11 @@ on:
     paths: package.json
 
 env:
-  packageName: "dev.sleightly.template"
-  packagePath: "Packages/dev.sleightly.template"
-  packageFileName: "JS-Template"
-  packageReleaseName: "VPM Package Template"
-  triggerRepoUpdate: ${{ false }}
+  packageName: "dev.jetees.memoryoptimizer"
+  packagePath: "Packages/dev.jetees.memoryoptimizer"
+  packageFileName: "MemoryOptimizer"
+  packageReleaseName: "Memory Optimizer"
+  triggerRepoUpdate: ${{ true }}
 
 permissions:
   contents: write

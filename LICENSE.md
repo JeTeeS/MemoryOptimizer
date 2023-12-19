@@ -1,7 +1,7 @@
-Copyright (C) JustSleightly, LLC - All Rights Reserved
+Copyright (C) 2022-2023 JeTeeS jetees.vr@gmail.com
 
-Unauthorized copying of this file, via any medium is strictly prohibited
-Proprietary and confidential
+Memory Optimizer can not be copied and/or distributed without the express
+permission of JeTeeS
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -10,6 +10,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-Written by Steven Nguyen <just@sleightly.dev>, January 2023
-https://terms.sleightly.dev/
