@@ -24,7 +24,9 @@ That being said, almost all systems outside of those specific systems should be 
 - Simple radials
 
 ### Change detection
-Change detection will make my system look for changes in your paramters and then sync those changes first, this way the syncing will be faster. Although, this will also make the system potencially prone to getting stuck on a specific step if any of the paramters are always changing. Specifically if a paramter is changing more often than the total sync time (which you can see when you're generating the system) then issues might arise. Usually this isn't a problem for most systems, but some systems to be aware of that might cause issues are things like:
+Change detection will make my system look for changes in your paramters and then sync those changes first, this way the syncing will be faster.
+
+Although, this will also make the system potencially more prone to getting stuck on a specific step if any of the paramters are always changing. Specifically if a parameter is changing more often than the total sync time (which you can see when you're generating the system) then issues might arise. Usually this isn't a problem for most systems, but some systems to be aware of that might cause issues are things like:
 - Face tracking
 - Some RBG toggles that continously change colors
 - 
