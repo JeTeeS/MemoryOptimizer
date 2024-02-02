@@ -1,7 +1,7 @@
 # Changelog
 
-## [0.1.0] - 2023-12-18
+## [0.1.0] - 2024-2-2
 
 ### Added
 
-- Things and stuff
+- uhh everything :)
