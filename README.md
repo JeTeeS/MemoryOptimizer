@@ -15,18 +15,18 @@ A tool to help you have more effective memory on your vrchat avatars!
 
 ### What paramteres do I select?
 
-This system works by only syncing a few paramters at a time and so by the very nature of the system not all paramters can be optimized, that means position syncing systems like [15-Bits-Position-Rotation-Networking](https://github.com/VRLabs/15-Bits-Position-Rotation-Networking) can not be optimized by this system.
+This system works by only syncing a few paramters at a time and so by the very nature of the system not all paramters can be optimized, that means some advanced systems like [15-Bits-Position-Rotation-Networking](https://github.com/VRLabs/15-Bits-Position-Rotation-Networking) can not be optimized by this system.
 
-That being said, almost no other systems rely on syncing this way and should be compatible!
+That being said, most things should work just fine!
 
 ### Change detection
 
-Change detection will make my system look for changes in your paramters and then sync those changes first, this way the syncing will be faster.
+Change detection will make my system look for changes in your paramters and then sync those changes first, this will make the syncing will faster.
 
-Although, this will also make the system potencially more prone to getting stuck on a specific step if any of the paramters are always changing. Specifically if a parameter is changing more often than the total sync time (which you can see when you're generating the system) then issues might arise. Usually this isn't a problem for most systems, but some systems to be aware of that might cause issues are things like:
+Although, this will also make the system potencially more prone to getting stuck on a specific step if any of the paramters are always changing. Specifically if a parameter is changing more often than the total sync time (which you can see when you're generating the system), then issues might arise. Usually this isn't a problem for most systems, but some systems to be aware of that might cause issues are:
 
 - Face tracking
-- Some RBG toggles that continously change colors
+- Some RBG toggles that continously change colors (not all)
 -
 
 ### Things you *can* optimize
