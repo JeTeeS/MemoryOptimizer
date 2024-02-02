@@ -1,4 +1,4 @@
-Copyright (C) 2022-2023 JeTeeS jetees.vr@gmail.com
+Copyright (C) 2023-2024 JeTeeS jetees.vr@gmail.com
 
 Memory Optimizer can not be copied and/or distributed without the express
 permission of JeTeeS
