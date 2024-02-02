@@ -723,23 +723,27 @@ namespace JeTeeS.MemoryOptimizer
 
             foreach(AnimatorControllerLayer mainBlendTreeLayer in mainBlendTreeLayers)
             {
+
                 //Debug.Log("Animator layer " + mainBlendTreeLayer.name + " of index " + fxLayer.FindLayerIndex(mainBlendTreeLayer) + " is being deleted");
                 fxLayer.RemoveLayer(mainBlendTreeLayer);
             }
 
             foreach (AnimatorControllerLayer syncingLayer in syncingLayers)
             {
+
                 //Debug.Log("Animator layer " + syncingLayer.name + " of index " + fxLayer.FindLayerIndex(syncingLayer) + " is being deleted");
                 fxLayer.RemoveLayer(syncingLayer);
             }
 
             foreach (VRCExpressionParameters.Parameter param in generatedExpressionParams)
             {
+
                 //Debug.Log("Expression param " + param.name + "  of type: " + param.valueType + " is being deleted");
                 expressionParameters.parameters = expressionParameters.parameters.Where(x => x != param).ToArray();
             }
             foreach (AnimatorControllerParameter param in generatedAnimatorParams)
             {
+
                 //Debug.Log("Controller param " + param.name + "  of type: " + param.type + " is being deleted");
                 fxLayer.RemoveParameter(param);
             }
@@ -750,7 +754,6 @@ namespace JeTeeS.MemoryOptimizer
             }
 
             EditorUtility.SetDirty(expressionParameters);
-
             AssetDatabase.SaveAssets();
         }
     }
