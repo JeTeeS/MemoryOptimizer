@@ -21,15 +21,12 @@ That being said, most things should work just fine!
 
 ### Change detection
 
-Change detection will make my system look for changes in your paramters and then sync those changes first, this will make the syncing will faster.
+Change detection will make my system look for changes in your paramters and then sync those changes first, this will make the syncing faster.
 
-Although, this will also make the system potencially more prone to getting stuck on a specific step if any of the paramters are always changing. Specifically if a parameter is changing more often than the total sync time (which you can see when you're generating the system), then issues might arise. Usually this isn't a problem for most systems, but some systems to be aware of that might cause issues are:
+**NOTE: You have to have more than 3 sync steps to enable change detection!**
+
+Although, this will also make the system potencially more prone to getting stuck on a specific step if any of the paramters are *always* changing. Specifically if a parameter is changing more often than the total sync time (which you can see when you're generating the system), then issues might arise. Usually this isn't a problem for most systems, but some systems to be aware of that might cause issues are:
 
 - Face tracking
 - Some RBG toggles that continously change colors (not all)
 -
-
-### Things you *can* optimize
-
-- Simple toggles
-- Simple radials
