@@ -18,3 +18,9 @@
 
 - Some debugging logs 
 
+
+## [0.1.2] - 2024-2-2
+
+### Changed
+
+- No longer uses submodule
