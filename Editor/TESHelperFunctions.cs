@@ -157,7 +157,7 @@ namespace JeTeeS.TES.HelperFunctions
 
         public static bool IsBlendTreeLayer(this AnimatorControllerLayer layer)
         {
-            if (layer == null) return false;
+            if (layer == null || layer.stateMachine == null) return false;
             foreach (var state in layer.stateMachine.states)
             {
                 if (!state.state.name.Contains("WD On")) return false;
