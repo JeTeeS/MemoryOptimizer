@@ -137,7 +137,7 @@ namespace JeTeeS.TES.HelperFunctions
                 layerQueue.Enqueue(layer);
             }
 
-            AnimatorControllerLayer currentLayer = layerQueue.Dequeue();
+            currentLayer = layerQueue.Dequeue();
             while (currentLayer.IsBlendTreeLayer())
             {
                 currentLayer = layerQueue.Dequeue();
