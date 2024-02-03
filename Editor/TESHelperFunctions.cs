@@ -130,7 +130,8 @@ namespace JeTeeS.TES.HelperFunctions
         public static int FindWDInController(this AnimatorController controller)
         {
             Queue<AnimatorControllerLayer> layerQueue = new Queue<AnimatorControllerLayer>();
-            int firstWD;
+            AnimatorControllerLayer currentLayer = null;
+            int firstWD = -2;
             foreach (var layer in controller.layers)
             {
                 layerQueue.Enqueue(layer);
