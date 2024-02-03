@@ -143,7 +143,6 @@ namespace JeTeeS.MemoryOptimizer
             AnimatorState localEntryState = optimizerState.localStateMachine.AddState("Entry", new Vector3(0, 100, 0));
             localEntryState.hideFlags = HideFlags.HideInHierarchy;
             localEntryState.motion = optimizerState.oneFrameBuffer;
-            localEntryState.writeDefaultValues = false;
 
             //add transition from local entry to 1st set value
             localEntryState.AddTransition(new AnimatorStateTransition { destinationState = optimizerState.localSetStates[0], exitTime = 0, hasExitTime = true, hasFixedDuration = true, duration = 0f, hideFlags = HideFlags.HideInHierarchy });
@@ -260,7 +259,6 @@ namespace JeTeeS.MemoryOptimizer
                 localValueChangedState = localStateMachine.AddState("Value Changed", new Vector3(0, 600, 0));
                 localValueChangedState.hideFlags = HideFlags.HideInHierarchy;
                 localValueChangedState.motion = optimizerState.oneFrameBuffer;
-                localValueChangedState.writeDefaultValues = false;
                 localValueChangedState.AddTransition(new AnimatorStateTransition()
                 {
                     destinationState = localEntryState,
@@ -274,7 +272,6 @@ namespace JeTeeS.MemoryOptimizer
 
             AnimatorState waitForIndexer = remoteStateMachine.AddState("WaitForIndexer", new Vector3(0, 400, 0));
             waitForIndexer.hideFlags = HideFlags.HideInHierarchy;
-            waitForIndexer.writeDefaultValues = false;
             waitForIndexer.motion = optimizerState.oneFrameBuffer;
 
             for (int i = 0; i < syncSteps; i++)
@@ -531,7 +528,6 @@ namespace JeTeeS.MemoryOptimizer
                 //add the local set and reset states
                 localSetStates.Add(localStateMachine.AddState("Set Value " + (i + 1), AngleRadiusToPos(((float)i / syncSteps + 0.5f) * (float)Math.PI * 2f, 400f, new Vector3(0, 600, 0))));
                 localSetStates.Last().hideFlags = HideFlags.HideInHierarchy;
-                localSetStates.Last().writeDefaultValues = false;
                 localSetStates.Last().motion = optimizerState.oneSecBuffer;
 
                 if (generateChangeCheck)
@@ -539,7 +535,6 @@ namespace JeTeeS.MemoryOptimizer
                     localResetStates.Add(localStateMachine.AddState("Reset Change Check " + (i + 1), AngleRadiusToPos(((float)i / syncSteps + 0.5f) * (float)Math.PI * 2f + ((float)Math.PI * 0.25f), 480f, new Vector3(0, 600, 0))));
                     localResetStates.Last().hideFlags = HideFlags.HideInHierarchy;
                     localResetStates.Last().motion = optimizerState.oneSecBuffer;
-                    localResetStates.Last().writeDefaultValues = false;
 
                     localResetStates.Last().AddTransition(new AnimatorStateTransition()
                     {
@@ -556,7 +551,6 @@ namespace JeTeeS.MemoryOptimizer
                 remoteSetStates.Add(remoteStateMachine.AddState("Set values for index " + (i + 1), AngleRadiusToPos(((float)i / syncSteps + 0.5f) * (float)Math.PI * 2f, 250f, new Vector3(0, 400, 0))));
                 remoteSetStates.Last().hideFlags = HideFlags.HideInHierarchy;
                 remoteSetStates.Last().motion = optimizerState.oneFrameBuffer;
-                remoteSetStates.Last().writeDefaultValues = false;
             }
 
             optimizerState.localSetStates = localSetStates;
@@ -629,7 +623,6 @@ namespace JeTeeS.MemoryOptimizer
             AnimatorControllerLayer syncingLayer = optimizerState.syncingLayer;
             AnimatorState localRemoteSplitState =
                 syncingLayer.stateMachine.AddState("Local/Remote split", position: new Vector3(0, 100, 0));
-            localRemoteSplitState.writeDefaultValues = false;
             localRemoteSplitState.motion = optimizerState.oneFrameBuffer;
             localRemoteSplitState.hideFlags = HideFlags.HideInHierarchy;
             syncingLayer.stateMachine.defaultState = localRemoteSplitState;
