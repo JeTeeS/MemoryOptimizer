@@ -517,6 +517,7 @@ namespace JeTeeS.TES.HelperFunctions
                 name = "MainBlendTree",
             };
             state.motion = mainBlendTree;
+            state.writeDefaultValues = true;
             mainBlendTreeLayer.stateMachine.AddHiddenIdentifier(mainBlendTreeIdentifier);
             return (BlendTree)state.motion;
         }
