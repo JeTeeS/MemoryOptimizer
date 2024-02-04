@@ -373,7 +373,7 @@ namespace JeTeeS.TES.HelperFunctions
         {
             BlendTree smoothingParentTree = GetOrGenerateChildTree(controller, smoothingParentTreeName, mainBlendTreeIdentifier, mainBlendTreeLayerName, constantOneName);
             AnimationClip smoothingAnimMin = MakeAAP(smoothedParamName, saveTo, minValue, 1, smoothedParamName + minValue);
-            AnimationClip smoothingAnimMax = MakeAAP(smoothedParamName, saveTo, maxValue, 1, smoothedParamName + minValue);
+            AnimationClip smoothingAnimMax = MakeAAP(smoothedParamName, saveTo, maxValue, 1, smoothedParamName + maxValue);
             controller.AddUniqueParam(smoothingAmountParamName, AnimatorControllerParameterType.Float, 0.1f);
             AnimatorControllerParameter constantOneParam = controller.AddUniqueParam(constantOneName, AnimatorControllerParameterType.Float, 1);
             AnimatorControllerParameter smoothedParam = controller.AddUniqueParam(smoothedParamName);
