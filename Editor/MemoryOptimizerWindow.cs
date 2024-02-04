@@ -252,7 +252,14 @@ namespace JeTeeS.MemoryOptimizer
                     }
                     using (new SqueezeScope((0, 0, EditorH, EditorStyles.helpBox)))
                     {
-                        if (maxSyncSteps < 2)
+                        if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
+                        {
+                            GUI.backgroundColor = Color.black;
+                            GUILayout.Label("System already installed!", EditorStyles.boldLabel);
+                            GUI.enabled = false;
+                            EditorGUILayout.IntSlider(syncSteps, 0, 0);
+                        }
+                        else if (maxSyncSteps < 2)
                         {
                             GUI.backgroundColor = Color.red;
                             GUILayout.Label("Too few parameters selected!", EditorStyles.boldLabel);
@@ -292,7 +299,13 @@ namespace JeTeeS.MemoryOptimizer
                     GUI.enabled = true;
                 }
 
-                if (syncSteps < 2)
+                if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
+                {
+                    GUI.enabled = false;
+                    GUI.backgroundColor = Color.black;
+                    GUILayout.Button("System already installed! Please uninstall the current system");
+                }
+                else if (syncSteps < 2)
                 {
                     GUI.enabled = false;
                     GUI.backgroundColor = Color.red;
@@ -309,12 +322,6 @@ namespace JeTeeS.MemoryOptimizer
                     GUI.enabled = false;
                     GUI.backgroundColor = Color.red;
                     GUILayout.Button("No FX layer selected!");
-                }
-                else if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
-                {
-                    GUI.enabled = false;
-                    GUI.backgroundColor = Color.red;
-                    GUILayout.Button("System already installed! Please uninstall the current system");
                 }
                 else
                 {
