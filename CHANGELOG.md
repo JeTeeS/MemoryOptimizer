@@ -25,8 +25,15 @@
 
 - No longer uses submodule
 
+## [0.1.3] - 2024-2-2
 
-## [0.1.3] - 2024-2-4
+### Fixed
+
+- WD detection now handles empty layers properly
+
+
+
+## [0.1.4] - 2024-2-4
 
 ### Fixed
 
