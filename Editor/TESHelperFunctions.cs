@@ -115,6 +115,7 @@ namespace JeTeeS.TES.HelperFunctions
             {
                 stateQueue.Enqueue(state);
             }
+            if (stateQueue.Count == 0) return -2;
             ChildAnimatorState currentState = stateQueue.Dequeue();
             firstWD = currentState.state.writeDefaultValues;
             while (stateQueue.Count > 1)
@@ -130,21 +131,19 @@ namespace JeTeeS.TES.HelperFunctions
         public static int FindWDInController(this AnimatorController controller)
         {
             Queue<AnimatorControllerLayer> layerQueue = new Queue<AnimatorControllerLayer>();
-            AnimatorControllerLayer currentLayer = null;
+            AnimatorControllerLayer currentLayer = new AnimatorControllerLayer();
             int firstWD = -2;
             foreach (var layer in controller.layers)
             {
                 layerQueue.Enqueue(layer);
             }
 
-            currentLayer = layerQueue.Dequeue();
-            while (currentLayer.IsBlendTreeLayer())
+            while ((currentLayer.IsBlendTreeLayer() || firstWD == -2) && layerQueue.Count > 1)
             {
+                if (firstWD == -1) return -1;
                 currentLayer = layerQueue.Dequeue();
+                firstWD = currentLayer.FindWDInLayer();
             }
-
-            firstWD = currentLayer.FindWDInLayer();
-            if (firstWD == -1) return -1;
 
             while (layerQueue.Count > 1)
             {
