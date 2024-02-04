@@ -192,7 +192,7 @@ namespace JeTeeS.MemoryOptimizer
             {
                 List<AnimatorControllerParameter> paramMatches = optimizerState.FXController.parameters.Where(x => x.name == param.param.name).ToList();
                 AnimatorControllerParameter paramMatch = paramMatches[0];
-                if (paramMatch.type == AnimatorControllerParameterType.Bool)
+                if (paramMatch.type == AnimatorControllerParameterType.Int || paramMatch.type == AnimatorControllerParameterType.Bool)
                 {
                     AnimatorControllerParameter paramCopy = optimizerState.FXController.AddUniqueParam(prefix + paramMatch.name + "_Copy");
                     optimizerState.boolsNIntsWithCopies.Add(paramMatch);
@@ -206,7 +206,7 @@ namespace JeTeeS.MemoryOptimizer
                 }
                 else
                 {
-                    Debug.LogError("Param " + param.param.name + "is not bool or float!");
+                    Debug.LogError("Param " + param.param.name + "is not bool, int or float!");
                 }
             }
 
@@ -214,7 +214,7 @@ namespace JeTeeS.MemoryOptimizer
             {
                 List<AnimatorControllerParameter> paramMatches = optimizerState.FXController.parameters.Where(x => x.name == param.param.name).ToList();
                 AnimatorControllerParameter paramMatch = paramMatches[0];
-                if (paramMatch.type == AnimatorControllerParameterType.Int)
+                if (paramMatch.type == AnimatorControllerParameterType.Int || paramMatch.type == AnimatorControllerParameterType.Bool)
                 {
                     AnimatorControllerParameter paramCopy = optimizerState.FXController.AddUniqueParam(prefix + paramMatch.name + "_Copy");
                     optimizerState.boolsNIntsWithCopies.Add(paramMatch);
@@ -228,7 +228,7 @@ namespace JeTeeS.MemoryOptimizer
                 }
                 else
                 {
-                    Debug.LogError("Param " + param.param.name + "is not bool or float!");
+                    Debug.LogError("Param " + param.param.name + "is not bool, int or float!");
                 }
 
 
