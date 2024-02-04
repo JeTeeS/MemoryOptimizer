@@ -327,7 +327,7 @@ namespace JeTeeS.MemoryOptimizer
 
         public void OnChangeUpdate()
         {
-            foreach (var x in paramList) { x.willBeOptimized = false; }
+            if (paramList != null) foreach (MemoryOptimizerMain.MemoryOptimizerListData param in paramList) { param.willBeOptimized = false; }
 
             boolsToOptimize = paramList.FindAll(x => x.selected && x.param.valueType == VRCExpressionParameters.ValueType.Bool);
             selectedBools = boolsToOptimize.Count();
