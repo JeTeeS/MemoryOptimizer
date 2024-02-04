@@ -251,24 +251,7 @@ namespace JeTeeS.MemoryOptimizer
             AnimatorStateMachine localStateMachine = optimizerState.localStateMachine;
 
             string syncStepsBinary = (syncSteps - 1).DecimalToBinary().ToString();
-
-            AnimatorState localValueChangedState = null;
-            if (generateChangeCheck)
-            {
-                localValueChangedState = localStateMachine.AddState("Value Changed", new Vector3(0, 600, 0));
-                localValueChangedState.hideFlags = HideFlags.HideInHierarchy;
-                localValueChangedState.motion = optimizerState.oneFrameBuffer;
-                localValueChangedState.AddTransition(new AnimatorStateTransition()
-                {
-                    destinationState = localEntryState,
-                    exitTime = 1,
-                    hasExitTime = true,
-                    hasFixedDuration = true,
-                    duration = 0f,
-                    hideFlags = HideFlags.HideInHierarchy
-                });
-            }
-
+           
             AnimatorState waitForIndexer = remoteStateMachine.AddState("WaitForIndexer", new Vector3(0, 400, 0));
             waitForIndexer.hideFlags = HideFlags.HideInHierarchy;
             waitForIndexer.motion = optimizerState.oneFrameBuffer;
@@ -317,18 +300,32 @@ namespace JeTeeS.MemoryOptimizer
                     void SetupLocalResetStateTransitions(string differentialName, int optimizeIndex, bool isBool)
                     {
                         //add transitions from value changed state to appropriate reset state
-                        AnimatorStateTransition transition = new AnimatorStateTransition
+                        foreach (AnimatorState state in localSetStates)
                         {
-                            destinationState = localResetStates[i],
-                            exitTime = 0,
-                            hasExitTime = false,
-                            hasFixedDuration = true,
-                            duration = 0f,
-                            hideFlags = HideFlags.HideInHierarchy
-                        };
-                        transition.AddCondition(AnimatorConditionMode.Greater, changeSensitivity, differentialName);
+                            AnimatorStateTransition transition = new AnimatorStateTransition
+                            {
+                                destinationState = localResetStates[i],
+                                exitTime = 0,
+                                hasExitTime = false,
+                                hasFixedDuration = true,
+                                duration = 0f,
+                                hideFlags = HideFlags.HideInHierarchy
+                            };
+                            transition.AddCondition(AnimatorConditionMode.Less, changeSensitivity * -1, differentialName);
+                            state.AddTransition(transition);
 
-                        localValueChangedState.AddTransition(transition);
+                            transition = new AnimatorStateTransition
+                            {
+                                destinationState = localResetStates[i],
+                                exitTime = 0,
+                                hasExitTime = false,
+                                hasFixedDuration = true,
+                                duration = 0f,
+                                hideFlags = HideFlags.HideInHierarchy
+                            };
+                            transition.AddCondition(AnimatorConditionMode.Greater, changeSensitivity, differentialName);
+                            state.AddTransition(transition);
+                        }
                     }
 
                     for (int j = 0; j < boolsToOptimize.Count / syncSteps; j++)
@@ -354,36 +351,8 @@ namespace JeTeeS.MemoryOptimizer
                 waitForIndexer.AddTransition(toSetterTransition);
             }
 
-            void SetupLocalSetStateTransition(MemoryOptimizerListData memoryOptimizerListData, int stateIndex, bool isBool)
-            {
-                AnimatorStateTransition transition = new AnimatorStateTransition
-                {
-                    destinationState = localValueChangedState,
-                    exitTime = 0,
-                    hasExitTime = false,
-                    hasFixedDuration = true,
-                    duration = 0f,
-                    hideFlags = HideFlags.HideInHierarchy
-                };
-                transition.AddCondition(AnimatorConditionMode.Greater, changeSensitivity, (isBool ? optimizerState.boolsDifferentials : optimizerState.intsNFloatsDifferentials).First(x => x.name.Contains(memoryOptimizerListData.param.name)).name);
-                localSetStates[stateIndex].AddTransition(transition);
-            }
-
             for (int i = 0; i < localSetStates.Count; i++)
             {
-                if (generateChangeCheck)
-                {
-                    //add transitions from the set states to value changed state
-                    foreach (MemoryOptimizerListData param in boolsToOptimize)
-                    {
-                        SetupLocalSetStateTransition(param, i, true);
-                    }
-                    foreach (MemoryOptimizerListData param in intsNFloatsToOptimize)
-                    {
-                        SetupLocalSetStateTransition(param, i, false);
-                    }
-                }
-                
                 localSetStates[i].AddTransition(new AnimatorStateTransition() { destinationState = localSetStates[(i + 1) % localSetStates.Count], exitTime = stepDelay, hasExitTime = true, hasFixedDuration = true, duration = 0f, hideFlags = HideFlags.HideInHierarchy });
             }
         }
