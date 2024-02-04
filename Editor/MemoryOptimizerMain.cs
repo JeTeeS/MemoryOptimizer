@@ -142,7 +142,7 @@ namespace JeTeeS.MemoryOptimizer
             localEntryState.hideFlags = HideFlags.HideInHierarchy;
             localEntryState.motion = optimizerState.oneFrameBuffer;
 
-            CreateStates(optimizerState, syncSteps, stepDelay, generateChangeCheck)
+            CreateStates(optimizerState, syncSteps, stepDelay, generateChangeCheck);
 
             //add transition from local entry to 1st set value
             localEntryState.AddTransition(new AnimatorStateTransition { destinationState = optimizerState.localSetStates[0], exitTime = 0, hasExitTime = true, hasFixedDuration = true, duration = 0f, hideFlags = HideFlags.HideInHierarchy });
