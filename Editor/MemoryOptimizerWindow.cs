@@ -151,7 +151,7 @@ namespace JeTeeS.MemoryOptimizer
 
                         if (GUILayout.Button("Select All")) 
                         {
-                            foreach (var param in paramList) param.selected = true;
+                            foreach (MemoryOptimizerMain.MemoryOptimizerListData param in paramList) param.selected = true;
                             OnChangeUpdate();
                         }
 
