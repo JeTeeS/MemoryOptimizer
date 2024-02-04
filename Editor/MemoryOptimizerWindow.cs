@@ -194,7 +194,7 @@ namespace JeTeeS.MemoryOptimizer
                                 {
                                     paramList[i].selected = false;
                                     GUI.backgroundColor = Color.yellow;
-                                    if (GUILayout.Button("Add to FX", GUILayout.Width(100))) { avatarFXLayer.AddUniqueParam(paramList[i].param.name, paramList[i].param.valueType.ValueTypeToParamType()); }
+                                    if (GUILayout.Button("Add to FX", GUILayout.Width(100))) { avatarFXLayer.AddUniqueParam(paramList[i].param.name, AnimatorControllerParameterType.Float); }
                                     GUI.enabled = false;
                                     GUI.backgroundColor = new Color(0.1f, 0.1f, 0.1f, 1);
                                     GUILayout.Button("Param not in FX", GUILayout.Width(100));
