@@ -101,13 +101,13 @@ namespace JeTeeS.MemoryOptimizer
                     
                     using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                     {
-                        EditorGUILayout.TextField("Write defaults: ", EditorStyles.boldLabel);
+                        EditorGUILayout.LabelField("Write defaults: ", EditorStyles.boldLabel);
                         wdOptionSelected = EditorGUILayout.Popup(wdOptionSelected, wdOptions, new GUIStyle(EditorStyles.popup) { fixedHeight = 18, stretchWidth = false });
                     }
 
                     using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                     {
-                        EditorGUILayout.TextField("Change check: ", EditorStyles.boldLabel);
+                        EditorGUILayout.LabelField("Change check: ", EditorStyles.boldLabel);
                         if (syncSteps < 3)
                         {
                             changeCheckEnabled = false;
@@ -147,7 +147,7 @@ namespace JeTeeS.MemoryOptimizer
 
                     using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                     {
-                        GUILayout.TextField("Avatar parameters: ", EditorStyles.boldLabel);
+                        EditorGUILayout.LabelField("Avatar parameters: ", EditorStyles.boldLabel);
 
                         if (GUILayout.Button("Select All")) 
                         {
