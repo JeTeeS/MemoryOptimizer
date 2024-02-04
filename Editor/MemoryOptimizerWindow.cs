@@ -334,9 +334,13 @@ namespace JeTeeS.MemoryOptimizer
 
         public void OnChangeUpdate()
         {
-            if (paramList != null) foreach (MemoryOptimizerMain.MemoryOptimizerListData param in paramList) param.willBeOptimized = false;
+            if (paramList == null) ResetParamSelection();
 
-            foreach (MemoryOptimizerMain.MemoryOptimizerListData param in paramList) if (!param.param.networkSynced || !(avatarFXLayer.parameters.Where(x => x.name == param.param.name).Count() > 0)) param.selected = false;
+            foreach (MemoryOptimizerMain.MemoryOptimizerListData param in paramList)
+            {
+                param.willBeOptimized = false;
+                if (!param.param.networkSynced || !(avatarFXLayer.parameters.Where(x => x.name == param.param.name).Count() > 0)) param.selected = false;
+            }
 
             boolsToOptimize = paramList.FindAll(x => x.selected && x.param.valueType == VRCExpressionParameters.ValueType.Bool);
             selectedBools = boolsToOptimize.Count();
