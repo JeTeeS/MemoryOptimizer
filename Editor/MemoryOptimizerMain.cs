@@ -708,7 +708,7 @@ namespace JeTeeS.MemoryOptimizer
                 //Debug.Log("Controller param " + param.name + "  of type: " + param.type + " is being deleted");
                 fxLayer.RemoveParameter(param);
             }
-            foreach (var param in optimizedParams)
+            foreach (VRCExpressionParameters.Parameter param in optimizedParams)
             {
                 //Debug.Log("Optimized param " + param.name + "  of type: " + param.valueType + " setting to sync");
                 param.networkSynced = true;
