@@ -301,7 +301,7 @@ namespace JeTeeS.MemoryOptimizer
                 }
                 else
                 {
-                    if (GUILayout.Button("GENERATE")) MemoryOptimizerMain.InstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters, boolsToOptimize, intsNFloatsToOptimize, syncSteps, stepDelay, changeCheckEnabled, wdOptionSelected, mainSavePath);
+                    if (GUILayout.Button("Generate")) MemoryOptimizerMain.InstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters, boolsToOptimize, intsNFloatsToOptimize, syncSteps, stepDelay, changeCheckEnabled, wdOptionSelected, mainSavePath);
                 }
                 GUI.backgroundColor = Color.white;
                 GUI.enabled = true;
