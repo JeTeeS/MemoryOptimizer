@@ -56,25 +56,29 @@ namespace JeTeeS.MemoryOptimizer
                 {
                     using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                     {
-                        avatarDescriptor = (VRCAvatarDescriptor)EditorGUILayout.ObjectField("Avatar", avatarDescriptor, typeof(VRCAvatarDescriptor), true);
-                        if (avatarDescriptor == null) { if (GUILayout.Button("Auto-detect")) { AutoPopulateAvatarFields(); } }
+                        void OnAvatarChange() => SetAvatarFields(avatarDescriptor, null, null);
+                        using (new ChangeCheckScope(OnAvatarChange))
+                        {
+                            avatarDescriptor = (VRCAvatarDescriptor)EditorGUILayout.ObjectField("Avatar", avatarDescriptor, typeof(VRCAvatarDescriptor), true);
+                            if (avatarDescriptor == null) { if (GUILayout.Button("Auto-detect")) { SetAvatarFields(null, avatarFXLayer, expressionParameters); } }
+                        }
                     }
 
                     using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                     {
                         avatarFXLayer = (AnimatorController)EditorGUILayout.ObjectField("FX layer", avatarFXLayer, typeof(AnimatorController), true);
-                        if (avatarFXLayer == null) { if (GUILayout.Button("Auto-detect")) { AutoPopulateAvatarFields(); } }
+                        if (avatarFXLayer == null) { if (GUILayout.Button("Auto-detect")) { SetAvatarFields(avatarDescriptor, null, expressionParameters); } }
                     }
 
                     using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                     {
                         expressionParameters = (VRCExpressionParameters)EditorGUILayout.ObjectField("Parameters", expressionParameters, typeof(VRCExpressionParameters), true);
-                        if (expressionParameters == null) { if (GUILayout.Button("Auto-detect")) { AutoPopulateAvatarFields(); } }
+                        if (expressionParameters == null) { if (GUILayout.Button("Auto-detect")) { SetAvatarFields(avatarDescriptor, avatarFXLayer, null); } }
                     }
 
                     if (!runOnce)
                     {
-                        AutoPopulateAvatarFields();
+                        SetAvatarFields(null, null, null);
                         runOnce = true;
                     }
 
@@ -345,11 +349,17 @@ namespace JeTeeS.MemoryOptimizer
             OnChangeUpdate();
         }
 
-        public void AutoPopulateAvatarFields()
+        public void SetAvatarFields(VRCAvatarDescriptor descriptor, AnimatorController controller, VRCExpressionParameters parameters)
         {
-            avatarDescriptor = FindObjectOfType<VRCAvatarDescriptor>();
-            avatarFXLayer = FindFXLayer(avatarDescriptor);
-            expressionParameters = FindExpressionParams(avatarDescriptor);
+            avatarDescriptor = descriptor;
+            avatarFXLayer = controller;
+            expressionParameters = parameters;
+
+            if (avatarDescriptor == null) avatarDescriptor = FindObjectOfType<VRCAvatarDescriptor>();
+            if (avatarFXLayer == null) avatarFXLayer = FindFXLayer(avatarDescriptor);
+            if (expressionParameters == null) expressionParameters = FindExpressionParams(avatarDescriptor);
+
+            OnChangeUpdate();
         }
 
         public class ChangeCheckScope : IDisposable
