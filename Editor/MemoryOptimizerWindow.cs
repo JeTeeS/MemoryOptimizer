@@ -56,29 +56,43 @@ namespace JeTeeS.MemoryOptimizer
                 {
                     using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                     {
-                        void OnAvatarChange() => SetAvatarFields(avatarDescriptor, null, null);
+                        void OnAvatarChange()
+                        {
+                            if (avatarDescriptor)
+                            {
+                                avatarFXLayer = FindFXLayer(avatarDescriptor);
+                                expressionParameters = FindExpressionParams(avatarDescriptor);
+                            }
+                            else
+                            {
+                                avatarFXLayer = null; 
+                                expressionParameters = null;
+                            }
+
+                            OnChangeUpdate();
+                        }
                         using (new ChangeCheckScope(OnAvatarChange))
                         {
                             avatarDescriptor = (VRCAvatarDescriptor)EditorGUILayout.ObjectField("Avatar", avatarDescriptor, typeof(VRCAvatarDescriptor), true);
-                            if (avatarDescriptor == null) { if (GUILayout.Button("Auto-detect")) { SetAvatarFields(null, avatarFXLayer, expressionParameters); } }
+                            if (avatarDescriptor == null) { if (GUILayout.Button("Auto-detect")) { FillAvatarFields(null, avatarFXLayer, expressionParameters); } }
                         }
                     }
 
                     using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                     {
                         avatarFXLayer = (AnimatorController)EditorGUILayout.ObjectField("FX layer", avatarFXLayer, typeof(AnimatorController), true);
-                        if (avatarFXLayer == null) { if (GUILayout.Button("Auto-detect")) { SetAvatarFields(avatarDescriptor, null, expressionParameters); } }
+                        if (avatarFXLayer == null) { if (GUILayout.Button("Auto-detect")) { FillAvatarFields(avatarDescriptor, null, expressionParameters); } }
                     }
 
                     using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                     {
                         expressionParameters = (VRCExpressionParameters)EditorGUILayout.ObjectField("Parameters", expressionParameters, typeof(VRCExpressionParameters), true);
-                        if (expressionParameters == null) { if (GUILayout.Button("Auto-detect")) { SetAvatarFields(avatarDescriptor, avatarFXLayer, null); } }
+                        if (expressionParameters == null) { if (GUILayout.Button("Auto-detect")) { FillAvatarFields(avatarDescriptor, avatarFXLayer, null); } }
                     }
 
                     if (!runOnce)
                     {
-                        SetAvatarFields(null, null, null);
+                        FillAvatarFields(null, null, null);
                         runOnce = true;
                     }
 
@@ -349,15 +363,12 @@ namespace JeTeeS.MemoryOptimizer
             OnChangeUpdate();
         }
 
-        public void SetAvatarFields(VRCAvatarDescriptor descriptor, AnimatorController controller, VRCExpressionParameters parameters)
+        
+        public void FillAvatarFields(VRCAvatarDescriptor descriptor, AnimatorController controller, VRCExpressionParameters parameters)
         {
-            avatarDescriptor = descriptor;
-            avatarFXLayer = controller;
-            expressionParameters = parameters;
-
-            if (avatarDescriptor == null) avatarDescriptor = FindObjectOfType<VRCAvatarDescriptor>();
-            if (avatarFXLayer == null) avatarFXLayer = FindFXLayer(avatarDescriptor);
-            if (expressionParameters == null) expressionParameters = FindExpressionParams(avatarDescriptor);
+            if (descriptor == null) avatarDescriptor = FindObjectOfType<VRCAvatarDescriptor>(); 
+            if (controller == null) avatarFXLayer = FindFXLayer(avatarDescriptor);
+            if (parameters == null) expressionParameters = FindExpressionParams(avatarDescriptor);
 
             OnChangeUpdate();
         }
