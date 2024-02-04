@@ -103,7 +103,6 @@ namespace JeTeeS.MemoryOptimizer
                     {
                         EditorGUILayout.TextField("Write defaults: ", EditorStyles.boldLabel);
                         wdOptionSelected = EditorGUILayout.Popup(wdOptionSelected, wdOptions, new GUIStyle(EditorStyles.popup) { fixedHeight = 18, stretchWidth = false });
-
                     }
 
                     using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
@@ -319,7 +318,7 @@ namespace JeTeeS.MemoryOptimizer
                 }
                 else
                 {
-                    if (GUILayout.Button("Generate")) MemoryOptimizerMain.InstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters, boolsToOptimize, intsNFloatsToOptimize, syncSteps, stepDelay, changeCheckEnabled, wdOptionSelected, mainSavePath);
+                    if (GUILayout.Button("Install")) MemoryOptimizerMain.InstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters, boolsToOptimize, intsNFloatsToOptimize, syncSteps, stepDelay, changeCheckEnabled, wdOptionSelected, mainSavePath);
                 }
                 GUI.backgroundColor = Color.white;
                 GUI.enabled = true;
