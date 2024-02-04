@@ -9,7 +9,6 @@ using VRC.SDK3.Avatars.ScriptableObjects;
 using VRC.SDKBase;
 using JeTeeS.TES.HelperFunctions;
 using static JeTeeS.TES.HelperFunctions.TESHelperFunctions;
-using YamlDotNet.Core.Tokens;
 
 namespace JeTeeS.MemoryOptimizer
 {
@@ -131,7 +130,7 @@ namespace JeTeeS.MemoryOptimizer
             }
             for (int j = 0; j < intsNFloatsToOptimize.Count / syncSteps; j++)
             {
-                AddUniqueSyncedParamToController(intNFloatSyncerParamName + j, optimizerState.FXController, optimizerState.expressionParameters, AnimatorControllerParameterType.Bool, VRCExpressionParameters.ValueType.Bool);
+                AddUniqueSyncedParamToController(intNFloatSyncerParamName + j, optimizerState.FXController, optimizerState.expressionParameters, AnimatorControllerParameterType.Int, VRCExpressionParameters.ValueType.Int);
             }
 
             CreateLocalRemoteSplit(optimizerState);
