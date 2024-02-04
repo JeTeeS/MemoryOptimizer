@@ -56,25 +56,43 @@ namespace JeTeeS.MemoryOptimizer
                 {
                     using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                     {
-                        avatarDescriptor = (VRCAvatarDescriptor)EditorGUILayout.ObjectField("Avatar", avatarDescriptor, typeof(VRCAvatarDescriptor), true);
-                        if (avatarDescriptor == null) { if (GUILayout.Button("Auto-detect")) { AutoPopulateAvatarFields(); } }
+                        void OnAvatarChange()
+                        {
+                            if (avatarDescriptor)
+                            {
+                                avatarFXLayer = FindFXLayer(avatarDescriptor);
+                                expressionParameters = FindExpressionParams(avatarDescriptor);
+                            }
+                            else
+                            {
+                                avatarFXLayer = null; 
+                                expressionParameters = null;
+                            }
+
+                            OnChangeUpdate();
+                        }
+                        using (new ChangeCheckScope(OnAvatarChange))
+                        {
+                            avatarDescriptor = (VRCAvatarDescriptor)EditorGUILayout.ObjectField("Avatar", avatarDescriptor, typeof(VRCAvatarDescriptor), true);
+                            if (avatarDescriptor == null) { if (GUILayout.Button("Auto-detect")) { FillAvatarFields(null, avatarFXLayer, expressionParameters); } }
+                        }
                     }
 
                     using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                     {
                         avatarFXLayer = (AnimatorController)EditorGUILayout.ObjectField("FX layer", avatarFXLayer, typeof(AnimatorController), true);
-                        if (avatarFXLayer == null) { if (GUILayout.Button("Auto-detect")) { AutoPopulateAvatarFields(); } }
+                        if (avatarFXLayer == null) { if (GUILayout.Button("Auto-detect")) { FillAvatarFields(avatarDescriptor, null, expressionParameters); } }
                     }
 
                     using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                     {
                         expressionParameters = (VRCExpressionParameters)EditorGUILayout.ObjectField("Parameters", expressionParameters, typeof(VRCExpressionParameters), true);
-                        if (expressionParameters == null) { if (GUILayout.Button("Auto-detect")) { AutoPopulateAvatarFields(); } }
+                        if (expressionParameters == null) { if (GUILayout.Button("Auto-detect")) { FillAvatarFields(avatarDescriptor, avatarFXLayer, null); } }
                     }
 
                     if (!runOnce)
                     {
-                        AutoPopulateAvatarFields();
+                        FillAvatarFields(null, null, null);
                         runOnce = true;
                     }
 
@@ -83,14 +101,13 @@ namespace JeTeeS.MemoryOptimizer
                     
                     using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                     {
-                        EditorGUILayout.TextField("Write defaults: ", EditorStyles.boldLabel);
+                        EditorGUILayout.LabelField("Write defaults: ", EditorStyles.boldLabel);
                         wdOptionSelected = EditorGUILayout.Popup(wdOptionSelected, wdOptions, new GUIStyle(EditorStyles.popup) { fixedHeight = 18, stretchWidth = false });
-
                     }
 
                     using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                     {
-                        EditorGUILayout.TextField("Change check: ", EditorStyles.boldLabel);
+                        EditorGUILayout.LabelField("Change check: ", EditorStyles.boldLabel);
                         if (syncSteps < 3)
                         {
                             changeCheckEnabled = false;
@@ -130,11 +147,11 @@ namespace JeTeeS.MemoryOptimizer
 
                     using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                     {
-                        GUILayout.TextField("Avatar parameters: ", EditorStyles.boldLabel);
+                        EditorGUILayout.LabelField("Avatar parameters: ", EditorStyles.boldLabel);
 
                         if (GUILayout.Button("Select All")) 
                         {
-                            foreach (var param in paramList) param.selected = true;
+                            foreach (MemoryOptimizerMain.MemoryOptimizerListData param in paramList) param.selected = true;
                             OnChangeUpdate();
                         }
 
@@ -177,7 +194,7 @@ namespace JeTeeS.MemoryOptimizer
                                 {
                                     paramList[i].selected = false;
                                     GUI.backgroundColor = Color.yellow;
-                                    if (GUILayout.Button("Add to FX", GUILayout.Width(100))) { avatarFXLayer.AddUniqueParam(paramList[i].param.name, paramList[i].param.valueType.ValueTypeToParamType()); }
+                                    if (GUILayout.Button("Add to FX", GUILayout.Width(100))) { avatarFXLayer.AddUniqueParam(paramList[i].param.name, AnimatorControllerParameterType.Float); }
                                     GUI.enabled = false;
                                     GUI.backgroundColor = new Color(0.1f, 0.1f, 0.1f, 1);
                                     GUILayout.Button("Param not in FX", GUILayout.Width(100));
@@ -235,7 +252,14 @@ namespace JeTeeS.MemoryOptimizer
                     }
                     using (new SqueezeScope((0, 0, EditorH, EditorStyles.helpBox)))
                     {
-                        if (maxSyncSteps < 2)
+                        if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
+                        {
+                            GUI.backgroundColor = Color.black;
+                            GUILayout.Label("System already installed!", EditorStyles.boldLabel);
+                            GUI.enabled = false;
+                            EditorGUILayout.IntSlider(syncSteps, 0, 0);
+                        }
+                        else if (maxSyncSteps < 2)
                         {
                             GUI.backgroundColor = Color.red;
                             GUILayout.Label("Too few parameters selected!", EditorStyles.boldLabel);
@@ -275,7 +299,13 @@ namespace JeTeeS.MemoryOptimizer
                     GUI.enabled = true;
                 }
 
-                if (syncSteps < 2)
+                if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
+                {
+                    GUI.enabled = false;
+                    GUI.backgroundColor = Color.black;
+                    GUILayout.Button("System already installed! Please uninstall the current system");
+                }
+                else if (syncSteps < 2)
                 {
                     GUI.enabled = false;
                     GUI.backgroundColor = Color.red;
@@ -293,15 +323,9 @@ namespace JeTeeS.MemoryOptimizer
                     GUI.backgroundColor = Color.red;
                     GUILayout.Button("No FX layer selected!");
                 }
-                else if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
-                {
-                    GUI.enabled = false;
-                    GUI.backgroundColor = Color.red;
-                    GUILayout.Button("System already installed! Please uninstall the current system");
-                }
                 else
                 {
-                    if (GUILayout.Button("GENERATE")) MemoryOptimizerMain.InstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters, boolsToOptimize, intsNFloatsToOptimize, syncSteps, stepDelay, changeCheckEnabled, wdOptionSelected, mainSavePath);
+                    if (GUILayout.Button("Install")) MemoryOptimizerMain.InstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters, boolsToOptimize, intsNFloatsToOptimize, syncSteps, stepDelay, changeCheckEnabled, wdOptionSelected, mainSavePath);
                 }
                 GUI.backgroundColor = Color.white;
                 GUI.enabled = true;
@@ -310,7 +334,13 @@ namespace JeTeeS.MemoryOptimizer
 
         public void OnChangeUpdate()
         {
-            foreach (var x in paramList) { x.willBeOptimized = false; }
+            if (paramList == null) ResetParamSelection();
+
+            foreach (MemoryOptimizerMain.MemoryOptimizerListData param in paramList)
+            {
+                param.willBeOptimized = false;
+                if (!param.param.networkSynced || !(avatarFXLayer.parameters.Where(x => x.name == param.param.name).Count() > 0)) param.selected = false;
+            }
 
             boolsToOptimize = paramList.FindAll(x => x.selected && x.param.valueType == VRCExpressionParameters.ValueType.Bool);
             selectedBools = boolsToOptimize.Count();
@@ -345,11 +375,14 @@ namespace JeTeeS.MemoryOptimizer
             OnChangeUpdate();
         }
 
-        public void AutoPopulateAvatarFields()
+        
+        public void FillAvatarFields(VRCAvatarDescriptor descriptor, AnimatorController controller, VRCExpressionParameters parameters)
         {
-            avatarDescriptor = FindObjectOfType<VRCAvatarDescriptor>();
-            avatarFXLayer = FindFXLayer(avatarDescriptor);
-            expressionParameters = FindExpressionParams(avatarDescriptor);
+            if (descriptor == null) avatarDescriptor = FindObjectOfType<VRCAvatarDescriptor>(); 
+            if (controller == null) avatarFXLayer = FindFXLayer(avatarDescriptor);
+            if (parameters == null) expressionParameters = FindExpressionParams(avatarDescriptor);
+
+            OnChangeUpdate();
         }
 
         public class ChangeCheckScope : IDisposable

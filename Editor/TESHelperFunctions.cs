@@ -131,20 +131,14 @@ namespace JeTeeS.TES.HelperFunctions
         public static int FindWDInController(this AnimatorController controller)
         {
             Queue<AnimatorControllerLayer> layerQueue = new Queue<AnimatorControllerLayer>();
-            int firstWD;
+            AnimatorControllerLayer currentLayer = new AnimatorControllerLayer();
+            int firstWD = -2;
             foreach (var layer in controller.layers)
             {
                 layerQueue.Enqueue(layer);
             }
 
-            AnimatorControllerLayer currentLayer = layerQueue.Dequeue();
-            while (currentLayer.IsBlendTreeLayer())
-            {
-                currentLayer = layerQueue.Dequeue();
-            }
-
-            firstWD = currentLayer.FindWDInLayer();
-            while (firstWD == -2 && layerQueue.Count > 1)
+            while ((currentLayer.IsBlendTreeLayer() || firstWD == -2) && layerQueue.Count > 1)
             {
                 if (firstWD == -1) return -1;
                 currentLayer = layerQueue.Dequeue();
@@ -162,7 +156,7 @@ namespace JeTeeS.TES.HelperFunctions
 
         public static bool IsBlendTreeLayer(this AnimatorControllerLayer layer)
         {
-            if (layer == null) return false;
+            if (layer == null || layer.stateMachine == null) return false;
             foreach (var state in layer.stateMachine.states)
             {
                 if (!state.state.name.Contains("WD On")) return false;
@@ -379,7 +373,7 @@ namespace JeTeeS.TES.HelperFunctions
         {
             BlendTree smoothingParentTree = GetOrGenerateChildTree(controller, smoothingParentTreeName, mainBlendTreeIdentifier, mainBlendTreeLayerName, constantOneName);
             AnimationClip smoothingAnimMin = MakeAAP(smoothedParamName, saveTo, minValue, 1, smoothedParamName + minValue);
-            AnimationClip smoothingAnimMax = MakeAAP(smoothedParamName, saveTo, maxValue, 1, smoothedParamName + minValue);
+            AnimationClip smoothingAnimMax = MakeAAP(smoothedParamName, saveTo, maxValue, 1, smoothedParamName + maxValue);
             controller.AddUniqueParam(smoothingAmountParamName, AnimatorControllerParameterType.Float, 0.1f);
             AnimatorControllerParameter constantOneParam = controller.AddUniqueParam(constantOneName, AnimatorControllerParameterType.Float, 1);
             AnimatorControllerParameter smoothedParam = controller.AddUniqueParam(smoothedParamName);
@@ -523,6 +517,7 @@ namespace JeTeeS.TES.HelperFunctions
                 name = "MainBlendTree",
             };
             state.motion = mainBlendTree;
+            state.writeDefaultValues = true;
             mainBlendTreeLayer.stateMachine.AddHiddenIdentifier(mainBlendTreeIdentifier);
             return (BlendTree)state.motion;
         }
