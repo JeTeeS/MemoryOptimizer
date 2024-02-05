@@ -53,3 +53,11 @@
 - "GENERATE" button is now "Install"
 - When changing avatars, will now update the FX layer and param list 
 - "Value Changed" state is no longer used and changes now directly transition to the right reset state
+
+
+## [0.1.5] - 2024-2-5
+
+### Changed
+
+- General code clean up
+- New readme
