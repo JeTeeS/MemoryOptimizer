@@ -17,7 +17,7 @@ namespace JeTeeS.MemoryOptimizer
         private const string menuPath = "Tools/TES/MemoryOptimizer";
         private string mainSavePath = "Assets/TES/MemoryOptimizer/";
 
-        private readonly string[] paramTypes = { "int", "float", "bool" };
+        private readonly string[] paramTypes = { "Int", "Float", "Bool" };
         public readonly string[] wdOptions = { "Auto-Detect", "Off", "On" };
 
         private VRCAvatarDescriptor avatarDescriptor;
@@ -30,7 +30,7 @@ namespace JeTeeS.MemoryOptimizer
         private int selectedIntsNFloats;
         private List<MemoryOptimizerMain.MemoryOptimizerListData> paramList;
 
-        private Vector2 scollPosition;
+        private Vector2 scrollPosition;
         private int maxSyncSteps = 1;
         private int syncSteps = 1;
         private float stepDelay = 0.2f;
@@ -65,29 +65,36 @@ namespace JeTeeS.MemoryOptimizer
                             }
                             else
                             {
-                                avatarFXLayer = null; 
+                                avatarFXLayer = null;
                                 expressionParameters = null;
                             }
 
                             OnChangeUpdate();
                         }
+
                         using (new ChangeCheckScope(OnAvatarChange))
                         {
                             avatarDescriptor = (VRCAvatarDescriptor)EditorGUILayout.ObjectField("Avatar", avatarDescriptor, typeof(VRCAvatarDescriptor), true);
-                            if (avatarDescriptor == null) { if (GUILayout.Button("Auto-detect")) { FillAvatarFields(null, avatarFXLayer, expressionParameters); } }
+                            if (avatarDescriptor == null)
+                                if (GUILayout.Button("Auto-detect"))
+                                    FillAvatarFields(null, avatarFXLayer, expressionParameters);
                         }
                     }
 
                     using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                     {
-                        avatarFXLayer = (AnimatorController)EditorGUILayout.ObjectField("FX layer", avatarFXLayer, typeof(AnimatorController), true);
-                        if (avatarFXLayer == null) { if (GUILayout.Button("Auto-detect")) { FillAvatarFields(avatarDescriptor, null, expressionParameters); } }
+                        avatarFXLayer = (AnimatorController)EditorGUILayout.ObjectField("FX Layer", avatarFXLayer, typeof(AnimatorController), true);
+                        if (avatarFXLayer == null)
+                            if (GUILayout.Button("Auto-Detect"))
+                                FillAvatarFields(avatarDescriptor, null, expressionParameters);
                     }
 
                     using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                     {
                         expressionParameters = (VRCExpressionParameters)EditorGUILayout.ObjectField("Parameters", expressionParameters, typeof(VRCExpressionParameters), true);
-                        if (expressionParameters == null) { if (GUILayout.Button("Auto-detect")) { FillAvatarFields(avatarDescriptor, avatarFXLayer, null); } }
+                        if (expressionParameters == null)
+                            if (GUILayout.Button("Auto-Detect"))
+                                FillAvatarFields(avatarDescriptor, avatarFXLayer, null);
                     }
 
                     if (!runOnce)
@@ -98,16 +105,15 @@ namespace JeTeeS.MemoryOptimizer
 
                     GUILayout.Space(5);
 
-                    
                     using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                     {
-                        EditorGUILayout.LabelField("Write defaults: ", EditorStyles.boldLabel);
+                        EditorGUILayout.LabelField("Write Defaults: ", EditorStyles.boldLabel);
                         wdOptionSelected = EditorGUILayout.Popup(wdOptionSelected, wdOptions, new GUIStyle(EditorStyles.popup) { fixedHeight = 18, stretchWidth = false });
                     }
 
                     using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                     {
-                        EditorGUILayout.LabelField("Change check: ", EditorStyles.boldLabel);
+                        EditorGUILayout.LabelField("Change Check: ", EditorStyles.boldLabel);
                         if (syncSteps < 3)
                         {
                             changeCheckEnabled = false;
@@ -121,20 +127,21 @@ namespace JeTeeS.MemoryOptimizer
                         else if (changeCheckEnabled)
                         {
                             GUI.backgroundColor = Color.green;
-                            if (GUILayout.Button("On", GUILayout.Width(203))) { changeCheckEnabled = !changeCheckEnabled; }
+                            if (GUILayout.Button("On", GUILayout.Width(203)))
+                                changeCheckEnabled = !changeCheckEnabled;
+
                             GUI.backgroundColor = Color.white;
                         }
                         else
                         {
                             GUI.backgroundColor = Color.red;
-                            if (GUILayout.Button("Off", GUILayout.Width(203))) { changeCheckEnabled = !changeCheckEnabled; }
+                            if (GUILayout.Button("Off", GUILayout.Width(203)))
+                                changeCheckEnabled = !changeCheckEnabled;
+
                             GUI.backgroundColor = Color.white;
                         }
                     }
-                    
-                    
-                    
-                    
+
                     GUILayout.Space(5);
                 }
 
@@ -143,29 +150,33 @@ namespace JeTeeS.MemoryOptimizer
                 if (avatarDescriptor != null && avatarFXLayer != null && expressionParameters != null)
                 {
                     longestParamName = 0;
-                    foreach (var x in expressionParameters.parameters) { longestParamName = Math.Max(longestParamName, x.name.Count()); }
+                    foreach (var x in expressionParameters.parameters)
+                        longestParamName = Math.Max(longestParamName, x.name.Count());
 
                     using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                     {
-                        EditorGUILayout.LabelField("Avatar parameters: ", EditorStyles.boldLabel);
+                        EditorGUILayout.LabelField("Avatar Parameters: ", EditorStyles.boldLabel);
 
-                        if (GUILayout.Button("Select All")) 
+                        if (GUILayout.Button("Select All"))
                         {
                             foreach (MemoryOptimizerMain.MemoryOptimizerListData param in paramList) param.selected = true;
                             OnChangeUpdate();
                         }
 
-                        if (GUILayout.Button("Clear selected parameters")) { ResetParamSelection(); }
+                        if (GUILayout.Button("Clear Selected Parameters"))
+                            ResetParamSelection();
                     }
-                    
-                    scollPosition = GUILayout.BeginScrollView(scollPosition, false, true);
+
+                    scrollPosition = GUILayout.BeginScrollView(scrollPosition, false, true);
 
                     for (int i = 0; i < expressionParameters.parameters.Length; i++)
                     {
                         using (new SqueezeScope((0, 0, Horizontal)))
                         {
                             //make sure the param list is always the same size as avatar's expression parameters
-                            if (paramList == null || paramList.Count != expressionParameters.parameters.Length) { ResetParamSelection(); }
+                            if (paramList == null || paramList.Count != expressionParameters.parameters.Length)
+                                ResetParamSelection();
+
                             using (new SqueezeScope((0, 0, Horizontal)))
                             {
                                 GUI.enabled = false;
@@ -180,24 +191,26 @@ namespace JeTeeS.MemoryOptimizer
                                 {
                                     GUI.backgroundColor = new Color(0.1f, 0.1f, 0.1f, 1);
                                     GUI.enabled = false;
-                                    GUILayout.Button("System already installed!", GUILayout.Width(203));
+                                    GUILayout.Button("System Already Installed!", GUILayout.Width(203));
                                 }
                                 //Param isn't network synced
                                 else if (!expressionParameters.parameters[i].networkSynced)
                                 {
                                     GUI.backgroundColor = new Color(0.1f, 0.1f, 0.1f, 1);
                                     GUI.enabled = false;
-                                    GUILayout.Button("Param not synced", GUILayout.Width(203));
+                                    GUILayout.Button("Param Not Synced", GUILayout.Width(203));
                                 }
                                 //Param isn't in FX layer
-                                else if (!(avatarFXLayer.parameters.Where(x => x.name == expressionParameters.parameters[i].name).Count() > 0))
+                                else if (!(avatarFXLayer.parameters.Count(x => x.name == expressionParameters.parameters[i].name) > 0))
                                 {
                                     paramList[i].selected = false;
                                     GUI.backgroundColor = Color.yellow;
-                                    if (GUILayout.Button("Add to FX", GUILayout.Width(100))) { avatarFXLayer.AddUniqueParam(paramList[i].param.name, AnimatorControllerParameterType.Float); }
+                                    if (GUILayout.Button("Add To FX", GUILayout.Width(100)))
+                                        avatarFXLayer.AddUniqueParam(paramList[i].param.name);
+
                                     GUI.enabled = false;
                                     GUI.backgroundColor = new Color(0.1f, 0.1f, 0.1f, 1);
-                                    GUILayout.Button("Param not in FX", GUILayout.Width(100));
+                                    GUILayout.Button("Param Not In FX", GUILayout.Width(100));
                                 }
                                 //Param isn't selected
                                 else if (!paramList[i].selected)
@@ -205,7 +218,8 @@ namespace JeTeeS.MemoryOptimizer
                                     GUI.backgroundColor = Color.red;
                                     using (new ChangeCheckScope(OnChangeUpdate))
                                     {
-                                        if (GUILayout.Button("Optimize", GUILayout.Width(203))) { paramList[i].selected = !paramList[i].selected; }
+                                        if (GUILayout.Button("Optimize", GUILayout.Width(203)))
+                                            paramList[i].selected = !paramList[i].selected;
                                     }
                                 }
                                 //Param won't be optimized
@@ -214,7 +228,8 @@ namespace JeTeeS.MemoryOptimizer
                                     GUI.backgroundColor = Color.yellow;
                                     using (new ChangeCheckScope(OnChangeUpdate))
                                     {
-                                        if (GUILayout.Button("Optimize", GUILayout.Width(203))) { paramList[i].selected = !paramList[i].selected; }
+                                        if (GUILayout.Button("Optimize", GUILayout.Width(203)))
+                                            paramList[i].selected = !paramList[i].selected;
                                     }
                                 }
                                 //Param will be optimized
@@ -223,9 +238,11 @@ namespace JeTeeS.MemoryOptimizer
                                     GUI.backgroundColor = Color.green;
                                     using (new ChangeCheckScope(OnChangeUpdate))
                                     {
-                                        if (GUILayout.Button("Optimize", GUILayout.Width(203))) { paramList[i].selected = !paramList[i].selected; }
+                                        if (GUILayout.Button("Optimize", GUILayout.Width(203)))
+                                            paramList[i].selected = !paramList[i].selected;
                                     }
                                 }
+
                                 GUI.enabled = true;
                             }
 
@@ -239,30 +256,31 @@ namespace JeTeeS.MemoryOptimizer
 
                     using (new SqueezeScope((0, 0, EditorH)))
                     {
-                        LabelWithHelpBox("Selected bools:  " + selectedBools);
-                        LabelWithHelpBox("Selected ints and floats:  " + selectedIntsNFloats);
+                        LabelWithHelpBox("Selected Bools:  " + selectedBools);
+                        LabelWithHelpBox("Selected Ints and Floats:  " + selectedIntsNFloats);
                     }
 
                     using (new SqueezeScope((0, 0, EditorH)))
                     {
-                        LabelWithHelpBox("Original param cost: " + (selectedBools + (selectedIntsNFloats * 8)));
-                        LabelWithHelpBox("New param cost: " + newParamCost);
-                        LabelWithHelpBox("Amount you will save:  " + (selectedBools + (selectedIntsNFloats * 8) - newParamCost));
-                        LabelWithHelpBox("Total sync time:  " + syncSteps * stepDelay + "s");
+                        LabelWithHelpBox("Original Param Cost:  " + (selectedBools + (selectedIntsNFloats * 8)));
+                        LabelWithHelpBox("New Param Cost:  " + newParamCost);
+                        LabelWithHelpBox("Amount You Will Save:  " + (selectedBools + (selectedIntsNFloats * 8) - newParamCost));
+                        LabelWithHelpBox("Total Sync Time:  " + syncSteps * stepDelay + "s");
                     }
+
                     using (new SqueezeScope((0, 0, EditorH, EditorStyles.helpBox)))
                     {
                         if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
                         {
                             GUI.backgroundColor = Color.black;
-                            GUILayout.Label("System already installed!", EditorStyles.boldLabel);
+                            GUILayout.Label("System Already Installed!", EditorStyles.boldLabel);
                             GUI.enabled = false;
                             EditorGUILayout.IntSlider(syncSteps, 0, 0);
                         }
                         else if (maxSyncSteps < 2)
                         {
                             GUI.backgroundColor = Color.red;
-                            GUILayout.Label("Too few parameters selected!", EditorStyles.boldLabel);
+                            GUILayout.Label("Too Few Parameters Selected!", EditorStyles.boldLabel);
                             GUI.enabled = false;
                             EditorGUILayout.IntSlider(syncSteps, 0, 0);
                         }
@@ -274,8 +292,10 @@ namespace JeTeeS.MemoryOptimizer
                                 syncSteps = EditorGUILayout.IntSlider(syncSteps, 2, maxSyncSteps);
                             }
                         }
+
                         GUI.backgroundColor = Color.white;
                     }
+
                     /*
                     using (new SqueezeScope((0, 0, EditorH, EditorStyles.helpBox)))
                     {
@@ -286,11 +306,13 @@ namespace JeTeeS.MemoryOptimizer
                     GUI.enabled = true;
                 }
 
-                if (syncSteps > maxSyncSteps) { syncSteps = maxSyncSteps; }
+                if (syncSteps > maxSyncSteps)
+                    syncSteps = maxSyncSteps;
 
                 if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
                 {
-                    if (GUILayout.Button("Uninstall")) MemoryOptimizerMain.UninstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters);
+                    if (GUILayout.Button("Uninstall"))
+                        MemoryOptimizerMain.UninstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters);
                 }
                 else
                 {
@@ -303,7 +325,7 @@ namespace JeTeeS.MemoryOptimizer
                 {
                     GUI.enabled = false;
                     GUI.backgroundColor = Color.black;
-                    GUILayout.Button("System already installed! Please uninstall the current system");
+                    GUILayout.Button("System Already Installed! Please Uninstall Before Reinstalling.");
                 }
                 else if (syncSteps < 2)
                 {
@@ -315,18 +337,18 @@ namespace JeTeeS.MemoryOptimizer
                 {
                     GUI.enabled = false;
                     GUI.backgroundColor = Color.red;
-                    GUILayout.Button("No avatar selected!");
+                    GUILayout.Button("No Avatar Selected!");
                 }
                 else if (!avatarFXLayer)
                 {
                     GUI.enabled = false;
                     GUI.backgroundColor = Color.red;
-                    GUILayout.Button("No FX layer selected!");
+                    GUILayout.Button("No FX Layer Selected!");
                 }
                 else
-                {
-                    if (GUILayout.Button("Install")) MemoryOptimizerMain.InstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters, boolsToOptimize, intsNFloatsToOptimize, syncSteps, stepDelay, changeCheckEnabled, wdOptionSelected, mainSavePath);
-                }
+                    if (GUILayout.Button("Install"))
+                        MemoryOptimizerMain.InstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters, boolsToOptimize, intsNFloatsToOptimize, syncSteps, stepDelay, changeCheckEnabled, wdOptionSelected, mainSavePath);
+
                 GUI.backgroundColor = Color.white;
                 GUI.enabled = true;
             }
@@ -339,7 +361,8 @@ namespace JeTeeS.MemoryOptimizer
             foreach (MemoryOptimizerMain.MemoryOptimizerListData param in paramList)
             {
                 param.willBeOptimized = false;
-                if (!param.param.networkSynced || !(avatarFXLayer.parameters.Where(x => x.name == param.param.name).Count() > 0)) param.selected = false;
+                if (!param.param.networkSynced || !(avatarFXLayer.parameters.Count(x => x.name == param.param.name) > 0))
+                    param.selected = false;
             }
 
             boolsToOptimize = paramList.FindAll(x => x.selected && x.param.valueType == VRCExpressionParameters.ValueType.Bool);
@@ -351,14 +374,19 @@ namespace JeTeeS.MemoryOptimizer
             intsNFloatsToOptimize = intsNFloatsToOptimize.Take(intsNFloatsToOptimize.Count() - (intsNFloatsToOptimize.Count() % syncSteps)).ToList();
 
             maxSyncSteps = new[] { selectedBools, selectedIntsNFloats }.Max();
-            if (maxSyncSteps < 1) { maxSyncSteps = 1; }
-            if (maxSyncSteps > 1 && syncSteps < 2) { syncSteps = 2; }
-
-            if (syncSteps < 2) { newParamCost = selectedBools + (selectedIntsNFloats * 8); }
+            if (maxSyncSteps < 1)
+                maxSyncSteps = 1;
+            else if (maxSyncSteps > 1 && syncSteps < 2)
+                syncSteps = 2;
+            else if (syncSteps < 2)
+                newParamCost = selectedBools + (selectedIntsNFloats * 8);
             else
             {
-                foreach (MemoryOptimizerMain.MemoryOptimizerListData x in boolsToOptimize) { x.willBeOptimized = true; }
-                foreach (MemoryOptimizerMain.MemoryOptimizerListData x in intsNFloatsToOptimize) { x.willBeOptimized = true; }
+                foreach (MemoryOptimizerMain.MemoryOptimizerListData x in boolsToOptimize)
+                    x.willBeOptimized = true;
+
+                foreach (MemoryOptimizerMain.MemoryOptimizerListData x in intsNFloatsToOptimize)
+                    x.willBeOptimized = true;
 
                 int syncBitCost = (syncSteps - 1).DecimalToBinary().ToString().Count();
 
@@ -369,18 +397,22 @@ namespace JeTeeS.MemoryOptimizer
         public void ResetParamSelection()
         {
             paramList = new List<MemoryOptimizerMain.MemoryOptimizerListData>();
-            foreach (VRCExpressionParameters.Parameter param in expressionParameters.parameters) { paramList.Add(new MemoryOptimizerMain.MemoryOptimizerListData(param, false, false)); }
+            foreach (VRCExpressionParameters.Parameter param in expressionParameters.parameters)
+                paramList.Add(new MemoryOptimizerMain.MemoryOptimizerListData(param, false, false));
+
             maxSyncSteps = 1;
             syncSteps = 1;
             OnChangeUpdate();
         }
 
-        
         public void FillAvatarFields(VRCAvatarDescriptor descriptor, AnimatorController controller, VRCExpressionParameters parameters)
         {
-            if (descriptor == null) avatarDescriptor = FindObjectOfType<VRCAvatarDescriptor>(); 
-            if (controller == null) avatarFXLayer = FindFXLayer(avatarDescriptor);
-            if (parameters == null) expressionParameters = FindExpressionParams(avatarDescriptor);
+            if (descriptor == null)
+                avatarDescriptor = FindObjectOfType<VRCAvatarDescriptor>();
+            if (controller == null)
+                avatarFXLayer = FindFXLayer(avatarDescriptor);
+            if (parameters == null)
+                expressionParameters = FindExpressionParams(avatarDescriptor);
 
             OnChangeUpdate();
         }
@@ -398,9 +430,7 @@ namespace JeTeeS.MemoryOptimizer
             public void Dispose()
             {
                 if (EditorGUI.EndChangeCheck())
-                {
                     callBack();
-                }
             }
         }
 
@@ -416,8 +446,10 @@ namespace JeTeeS.MemoryOptimizer
                 EditorV
             }
 
-            public SqueezeScope(SqueezeSettings input) : this(new[] { input }) { } 
-          
+            public SqueezeScope(SqueezeSettings input) : this(new[] { input })
+            {
+            }
+
             public SqueezeScope(params SqueezeSettings[] input)
             {
                 settings = input;
@@ -431,10 +463,18 @@ namespace JeTeeS.MemoryOptimizer
             {
                 switch (squeezeSettings.type)
                 {
-                    case Horizontal: GUILayout.BeginHorizontal(squeezeSettings.style); break;
-                    case Vertical: GUILayout.BeginVertical(squeezeSettings.style); break;
-                    case EditorH: EditorGUILayout.BeginHorizontal(squeezeSettings.style); break;
-                    case EditorV: EditorGUILayout.BeginVertical(squeezeSettings.style); break;
+                    case Horizontal:
+                        GUILayout.BeginHorizontal(squeezeSettings.style);
+                        break;
+                    case Vertical:
+                        GUILayout.BeginVertical(squeezeSettings.style);
+                        break;
+                    case EditorH:
+                        EditorGUILayout.BeginHorizontal(squeezeSettings.style);
+                        break;
+                    case EditorV:
+                        EditorGUILayout.BeginVertical(squeezeSettings.style);
+                        break;
                 }
 
                 GUILayout.Space(squeezeSettings.width1);
@@ -447,10 +487,18 @@ namespace JeTeeS.MemoryOptimizer
                     GUILayout.Space(squeezeSettings.width2);
                     switch (squeezeSettings.type)
                     {
-                        case Horizontal: GUILayout.EndHorizontal(); break;
-                        case Vertical: GUILayout.EndVertical(); break;
-                        case EditorH: EditorGUILayout.EndHorizontal(); break;
-                        case EditorV: EditorGUILayout.EndVertical(); break;
+                        case Horizontal:
+                            GUILayout.EndHorizontal();
+                            break;
+                        case Vertical:
+                            GUILayout.EndVertical();
+                            break;
+                        case EditorH:
+                            EditorGUILayout.EndHorizontal();
+                            break;
+                        case EditorV:
+                            EditorGUILayout.EndVertical();
+                            break;
                     }
                 }
             }
@@ -467,12 +515,13 @@ namespace JeTeeS.MemoryOptimizer
             {
                 return new SqueezeSettings { width1 = val.Item1, width2 = val.Item2, type = Horizontal, style = GUIStyle.none };
             }
-            public static implicit operator SqueezeSettings((int, int, SqueezeScope.SqueezeScopeType) val)
+
+            public static implicit operator SqueezeSettings((int, int, SqueezeScopeType) val)
             {
                 return new SqueezeSettings { width1 = val.Item1, width2 = val.Item2, type = val.Item3, style = GUIStyle.none };
             }
 
-            public static implicit operator SqueezeSettings((int, int, SqueezeScope.SqueezeScopeType, GUIStyle) val)
+            public static implicit operator SqueezeSettings((int, int, SqueezeScopeType, GUIStyle) val)
             {
                 return new SqueezeSettings { width1 = val.Item1, width2 = val.Item2, type = val.Item3, style = val.Item4 };
             }
