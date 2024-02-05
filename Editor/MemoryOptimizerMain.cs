@@ -95,9 +95,9 @@ namespace JeTeeS.MemoryOptimizer
             };
 
             /*Debug stuff
-            Debug.Log("Optimizing Params...");
-            foreach (MemoryOptimizerListData listData in boolsToOptimize) Debug.Log("Optimizing: " + listData.param.name + " that is the type: " + listData.param.valueType.ToString());
-            foreach (MemoryOptimizerListData listData in intsNFloatsToOptimize) Debug.Log("Optimizing: " + listData.param.name + " that is the type: " + listData.param.valueType.ToString());
+            Debug.Log("<color=yellow>[MemoryOptimizer]</color> Optimizing Params...");
+            foreach (MemoryOptimizerListData listData in boolsToOptimize) Debug.Log("<color=yellow>[MemoryOptimizer]</color> Optimizing: " + listData.param.name + " that is the type: " + listData.param.valueType.ToString());
+            foreach (MemoryOptimizerListData listData in intsNFloatsToOptimize) Debug.Log("<color=yellow>[MemoryOptimizer]</color> Optimizing: " + listData.param.name + " that is the type: " + listData.param.valueType.ToString());
             */
 
             optimizerState.syncingLayer = new AnimatorControllerLayer
@@ -178,6 +178,9 @@ namespace JeTeeS.MemoryOptimizer
             AssetDatabase.SaveAssets();
 
             SetupParameterDrivers(optimizerState);
+            
+            EditorApplication.Beep();
+            Debug.Log("<color=yellow>[MemoryOptimizer]</color> Installation Complete");
         }
 
         private static void GenerateDeltas(MemoryOptimizerState optimizerState, string generatedAssetsFilePath)
@@ -205,7 +208,7 @@ namespace JeTeeS.MemoryOptimizer
                     boolsDifferentials.Add(AddParamDifferential(paramMatch, smoothedParam, optimizerState.FXController, generatedAssetsFilePath, 0, 1, prefix + paramMatch.name + DifferentialSuffix, mainBlendTreeIdentifier, mainBlendTreeLayerName, DifferentialTreeName, constantOneName));
                 }
                 else
-                    Debug.LogError("Param " + param.param.name + "is not bool, int or float!");
+                    Debug.LogError("<color=yellow>[MemoryOptimizer]</color> Param " + param.param.name + "is not bool, int or float!");
             }
 
             foreach (MemoryOptimizerListData param in intsNFloatsToOptimize)
@@ -225,7 +228,7 @@ namespace JeTeeS.MemoryOptimizer
                     intsNFloatsDifferentials.Add(AddParamDifferential(paramMatch, smoothedParam, optimizerState.FXController, generatedAssetsFilePath, -1, 1, prefix + paramMatch.name + DifferentialSuffix, mainBlendTreeIdentifier, mainBlendTreeLayerName, DifferentialTreeName, constantOneName));
                 }
                 else
-                    Debug.LogError("Param " + param.param.name + "is not bool, int or float!");
+                    Debug.LogError("<color=yellow>[MemoryOptimizer]</color> Param " + param.param.name + "is not bool, int or float!");
             }
 
             optimizerState.boolsDifferentials = boolsDifferentials;
@@ -449,7 +452,7 @@ namespace JeTeeS.MemoryOptimizer
                             });
                     }
                     else
-                        Debug.LogError(param.name + " is not an int or a float!");
+                        Debug.LogError("<color=yellow>[MemoryOptimizer]</color> " + param.name + " is not an int or a float!");
                 }
             }
 
@@ -610,13 +613,13 @@ namespace JeTeeS.MemoryOptimizer
 
             if (mainBlendTreeLayers.Count > 1)
             {
-                Debug.LogError("Too many memory optimizer blendtrees found, unable to uninstall automatically!");
+                Debug.LogError("<color=yellow>[MemoryOptimizer]</color> Too many memory optimizer blendtrees found, unable to uninstall automatically!");
                 return;
             }
 
             if (syncingLayers.Count != 1)
             {
-                Debug.LogError(syncingLayers.Count + " syncing layers found, unable to uninstall automatically");
+                Debug.LogError("<color=yellow>[MemoryOptimizer]</color> " + syncingLayers.Count + " syncing layers found, unable to uninstall automatically");
                 return;
             }
 
@@ -637,55 +640,58 @@ namespace JeTeeS.MemoryOptimizer
 
             if (generatedExpressionParams.Count <= 0)
             {
-                Debug.LogError("Too few generated expression parameters found! Only " + generatedExpressionParams.Count + " found. Aborting uninstall...");
+                Debug.LogError("<color=yellow>[MemoryOptimizer]</color> Too few generated expression parameters found! Only " + generatedExpressionParams.Count + " found. Aborting uninstall...");
                 return;
             }
 
             if (generatedAnimatorParams.Count <= 0)
             {
-                Debug.LogError("Too few generated animator parameters found! Only " + generatedAnimatorParams.Count + " found. Aborting uninstall...");
+                Debug.LogError("<color=yellow>[MemoryOptimizer]</color> Too few generated animator parameters found! Only " + generatedAnimatorParams.Count + " found. Aborting uninstall...");
                 return;
             }
 
             if (optimizedParams.Count < 2)
             {
-                Debug.LogError("Too few optimized parameters found! Only " + optimizedParams.Count + " found. Aborting uninstall...");
+                Debug.LogError("<color=yellow>[MemoryOptimizer]</color> Too few optimized parameters found! Only " + optimizedParams.Count + " found. Aborting uninstall...");
                 return;
             }
 
             foreach (AnimatorControllerLayer mainBlendTreeLayer in mainBlendTreeLayers)
             {
-                //Debug.Log("Animator layer " + mainBlendTreeLayer.name + " of index " + fxLayer.FindLayerIndex(mainBlendTreeLayer) + " is being deleted");
+                //Debug.Log("<color=yellow>[MemoryOptimizer]</color> Animator layer " + mainBlendTreeLayer.name + " of index " + fxLayer.FindLayerIndex(mainBlendTreeLayer) + " is being deleted");
                 fxLayer.RemoveLayer(mainBlendTreeLayer);
             }
 
             foreach (AnimatorControllerLayer syncingLayer in syncingLayers)
             {
-                //Debug.Log("Animator layer " + syncingLayer.name + " of index " + fxLayer.FindLayerIndex(syncingLayer) + " is being deleted");
+                //Debug.Log("<color=yellow>[MemoryOptimizer]</color> Animator layer " + syncingLayer.name + " of index " + fxLayer.FindLayerIndex(syncingLayer) + " is being deleted");
                 fxLayer.RemoveLayer(syncingLayer);
             }
 
             foreach (VRCExpressionParameters.Parameter param in generatedExpressionParams)
             {
-                //Debug.Log("Expression param " + param.name + "  of type: " + param.valueType + " is being deleted");
+                //Debug.Log("<color=yellow>[MemoryOptimizer]</color> Expression param " + param.name + "  of type: " + param.valueType + " is being deleted");
                 expressionParameters.parameters = expressionParameters.parameters.Where(x => x != param).ToArray();
             }
 
             foreach (AnimatorControllerParameter param in generatedAnimatorParams)
             {
 
-                //Debug.Log("Controller param " + param.name + "  of type: " + param.type + " is being deleted");
+                //Debug.Log("<color=yellow>[MemoryOptimizer]</color> Controller param " + param.name + "  of type: " + param.type + " is being deleted");
                 fxLayer.RemoveParameter(param);
             }
 
             foreach (VRCExpressionParameters.Parameter param in optimizedParams)
             {
-                //Debug.Log("Optimized param " + param.name + "  of type: " + param.valueType + " setting to sync");
+                //Debug.Log("<color=yellow>[MemoryOptimizer]</color> Optimized param " + param.name + "  of type: " + param.valueType + " setting to sync");
                 param.networkSynced = true;
             }
 
             EditorUtility.SetDirty(expressionParameters);
             AssetDatabase.SaveAssets();
+            
+            EditorApplication.Beep();
+            Debug.Log("<color=yellow>[MemoryOptimizer]</color> Uninstall Complete");
         }
     }
 }
