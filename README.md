@@ -44,7 +44,7 @@ That being said, most things should work just fine!
 Change Detection will detect and prioritize recently changed parameters before continuing to resync other parameters for more responsive interactions.
 
 > [!NOTE]
-> Change Detection requires at least 3 sync steps to be enabled
+> Enabling Change Detection requires at least 3 sync steps
 
 It is not advised to enable Change Detection for parameters that are constantly updated.
 

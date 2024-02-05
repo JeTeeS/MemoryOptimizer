@@ -13,12 +13,13 @@ namespace JeTeeS.TES.HelperFunctions
     {
         public static AnimatorController FindFXLayer(VRCAvatarDescriptor descriptor)
         {
-            return (AnimatorController)descriptor.baseAnimationLayers.Where(x => x.type == VRCAvatarDescriptor.AnimLayerType.FX && x.animatorController != null).FirstOrDefault().animatorController;
+            return (AnimatorController)descriptor.baseAnimationLayers.FirstOrDefault(x => x.type == VRCAvatarDescriptor.AnimLayerType.FX && x.animatorController != null).animatorController;
         }
 
         public static VRCExpressionParameters FindExpressionParams(VRCAvatarDescriptor descriptor)
         {
-            if (descriptor == null) return null;
+            if (descriptor == null)
+                return null;
             return descriptor.expressionParameters;
         }
 
@@ -33,6 +34,7 @@ namespace JeTeeS.TES.HelperFunctions
                 default: return AnimatorControllerParameterType.Float;
             }
         }
+
         public static VRCExpressionParameters.ValueType ParamTypeToValueType(this AnimatorControllerParameterType paramType)
         {
             switch (paramType)
@@ -50,9 +52,11 @@ namespace JeTeeS.TES.HelperFunctions
             List<string> subPaths = controller.GetAssetPath().Split(@"\/".ToCharArray()).ToList();
             subPaths.RemoveAt(subPaths.Count - 1);
             string returnString = "";
-            foreach (string subPath in subPaths) returnString += subPath + "/";
+            foreach (string subPath in subPaths)
+                returnString += subPath + "/";
             return returnString;
         }
+
         public static Vector3 AngleRadiusToPos(float angle, float radius, Vector3 offset)
         {
             Vector3 result = new Vector3((float)Math.Sin(angle) * radius, (float)Math.Cos(angle) * radius, 0);
@@ -71,12 +75,9 @@ namespace JeTeeS.TES.HelperFunctions
         public static int FindLayerIndex(this AnimatorController controller, AnimatorControllerLayer layer)
         {
             for (int i = 0; i < controller.layers.Count(); i++)
-            {
                 if (controller.layers[i].stateMachine == layer.stateMachine)
-                {
                     return i;
-                }
-            }
+
             return -1;
         }
 
@@ -88,6 +89,7 @@ namespace JeTeeS.TES.HelperFunctions
                 Debug.LogError("Layer " + layer.name + "was not found in " + controller.name);
                 return;
             }
+
             controller.RemoveLayer(i);
         }
 
@@ -100,8 +102,10 @@ namespace JeTeeS.TES.HelperFunctions
             while (stateMachines.Count > 0)
             {
                 AnimatorStateMachine currentStateMachine = stateMachines.Dequeue();
-                foreach (ChildAnimatorState state in currentStateMachine.states) returnList.Add(state);
-                foreach (ChildAnimatorStateMachine stateMachine in currentStateMachine.stateMachines) stateMachines.Enqueue(stateMachine.stateMachine);
+                foreach (ChildAnimatorState state in currentStateMachine.states)
+                    returnList.Add(state);
+                foreach (ChildAnimatorStateMachine stateMachine in currentStateMachine.stateMachines)
+                    stateMachines.Enqueue(stateMachine.stateMachine);
             }
 
             return returnList;
@@ -110,19 +114,19 @@ namespace JeTeeS.TES.HelperFunctions
         public static int FindWDInLayer(this AnimatorControllerLayer layer)
         {
             Queue<ChildAnimatorState> stateQueue = new Queue<ChildAnimatorState>();
-            bool firstWD;
             foreach (var state in layer.FindAllStatesInLayer())
-            {
                 stateQueue.Enqueue(state);
-            }
-            if (stateQueue.Count == 0) return -2;
+
+            if (stateQueue.Count == 0)
+                return -2;
             ChildAnimatorState currentState = stateQueue.Dequeue();
-            firstWD = currentState.state.writeDefaultValues;
+            bool firstWD = currentState.state.writeDefaultValues;
             while (stateQueue.Count > 1)
             {
                 currentState = stateQueue.Dequeue();
 
-                if (currentState.state.writeDefaultValues != firstWD && !currentState.state.name.Contains("WD On")) return -1;
+                if (currentState.state.writeDefaultValues != firstWD && !currentState.state.name.Contains("WD On"))
+                    return -1;
             }
 
             return Convert.ToInt32(firstWD);
@@ -134,9 +138,7 @@ namespace JeTeeS.TES.HelperFunctions
             AnimatorControllerLayer currentLayer = new AnimatorControllerLayer();
             int firstWD = -2;
             foreach (var layer in controller.layers)
-            {
                 layerQueue.Enqueue(layer);
-            }
 
             while ((currentLayer.IsBlendTreeLayer() || firstWD == -2) && layerQueue.Count > 1)
             {
@@ -148,7 +150,8 @@ namespace JeTeeS.TES.HelperFunctions
             while (layerQueue.Count > 1)
             {
                 currentLayer = layerQueue.Dequeue();
-                if (currentLayer.FindWDInLayer() != firstWD) return -1;
+                if (currentLayer.FindWDInLayer() != firstWD)
+                    return -1;
             }
 
             return Convert.ToInt32(firstWD);
@@ -156,33 +159,36 @@ namespace JeTeeS.TES.HelperFunctions
 
         public static bool IsBlendTreeLayer(this AnimatorControllerLayer layer)
         {
-            if (layer == null || layer.stateMachine == null) return false;
+            if (layer == null || layer.stateMachine == null)
+                return false;
             foreach (var state in layer.stateMachine.states)
-            {
-                if (!state.state.name.Contains("WD On")) return false;
-            }
+                if (!state.state.name.Contains("WD On"))
+                    return false;
+
             return true;
         }
 
-        public static AnimatorControllerParameter AddUniqueParam(this AnimatorController controller, string paramName, AnimatorControllerParameterType paramType = AnimatorControllerParameterType.Float, float defualtValue = 0)
+        public static AnimatorControllerParameter AddUniqueParam(this AnimatorController controller, string paramName, AnimatorControllerParameterType paramType = AnimatorControllerParameterType.Float, float defaultValue = 0)
         {
             foreach (AnimatorControllerParameter param in controller.parameters)
             {
                 if (param.name == paramName)
                 {
-                    if (param.type != paramType) Debug.LogError("Paramter " + param.name + " is of type: " + param.type.ToString() + " not " + paramType.ToString() + "!");
+                    if (param.type != paramType)
+                        Debug.LogError("Parameter " + param.name + " is of type: " + param.type.ToString() + " not " + paramType.ToString() + "!");
                     return param;
                 }
             }
+
             AnimatorControllerParameter controllerParam = new AnimatorControllerParameter();
-            if (paramType == AnimatorControllerParameterType.Float) controllerParam = new AnimatorControllerParameter() { name = paramName, type = paramType, defaultFloat = defualtValue };
-            else if (paramType == AnimatorControllerParameterType.Int) controllerParam = new AnimatorControllerParameter() { name = paramName, type = paramType, defaultInt = ((int)defualtValue) };
+            if (paramType == AnimatorControllerParameterType.Float)
+                controllerParam = new AnimatorControllerParameter() { name = paramName, type = paramType, defaultFloat = defaultValue };
+            else if (paramType == AnimatorControllerParameterType.Int)
+                controllerParam = new AnimatorControllerParameter() { name = paramName, type = paramType, defaultInt = ((int)defaultValue) };
             else if (paramType == AnimatorControllerParameterType.Bool)
-            {
-                if (defualtValue > 0) controllerParam = new AnimatorControllerParameter() { name = paramName, type = paramType, defaultBool = true };
-                else controllerParam = new AnimatorControllerParameter() { name = paramName, type = paramType, defaultBool = false };
-            }
-            else Debug.LogError("Paramter " + paramName + " is not a float, int or bool??");
+                controllerParam = defaultValue > 0 ? new AnimatorControllerParameter() { name = paramName, type = paramType, defaultBool = true } : new AnimatorControllerParameter() { name = paramName, type = paramType, defaultBool = false };
+            else
+                Debug.LogError("Parameter " + paramName + " is not a float, int or bool??");
 
             controller.AddParameter(controllerParam);
             return controller.parameters.Last(x => x.name == paramName && x.type == paramType);
@@ -194,12 +200,15 @@ namespace JeTeeS.TES.HelperFunctions
             {
                 if (param.name == name)
                 {
-                    if (param.valueType != valueType) Debug.LogError("Paramter " + param.name + " is not of type: " + param.valueType.ToString() + "!");
+                    if (param.valueType != valueType)
+                        Debug.LogError("Parameter " + param.name + " is not of type: " + param.valueType.ToString() + "!");
                     return;
                 }
             }
+
             VRCExpressionParameters.Parameter[] newList = new VRCExpressionParameters.Parameter[vrcExpressionParameters.parameters.Length + 1];
-            for (int i = 0; i < vrcExpressionParameters.parameters.Length; i++) newList[i] = vrcExpressionParameters.parameters[i];
+            for (int i = 0; i < vrcExpressionParameters.parameters.Length; i++)
+                newList[i] = vrcExpressionParameters.parameters[i];
             newList[newList.Length - 1] = new VRCExpressionParameters.Parameter() { name = name, valueType = valueType, networkSynced = isNetworkSynced, saved = isSaved, defaultValue = defaultValue };
             vrcExpressionParameters.parameters = newList;
         }
@@ -233,21 +242,18 @@ namespace JeTeeS.TES.HelperFunctions
 
         public static List<AnimatorControllerLayer> FindHiddenIdentifier(this AnimatorController animatorController, string identifierString)
         {
-            if (animatorController == null) return null;
+            if (animatorController == null)
+                return null;
             List<AnimatorControllerLayer> returnList = new List<AnimatorControllerLayer>();
 
             foreach (AnimatorControllerLayer layer in animatorController.layers)
-            {
                 foreach (AnimatorStateTransition anyStateTransition in layer.stateMachine.anyStateTransitions)
-                {
                     if (anyStateTransition.isExit && anyStateTransition.mute && anyStateTransition.name == identifierString)
-                    {
                         returnList.Add(layer);
-                    }
-                }
-            }
+
             return returnList;
         }
+
         public static void ReadyPath(string path)
         {
             if (!System.IO.Directory.Exists(path))
@@ -277,21 +283,22 @@ namespace JeTeeS.TES.HelperFunctions
             */
         }
 
-        public static AnimationClip MakeAAP(string paramName, string saveAssetsTo, float value = 0, float animLenght = 1, string assetName = "") => MakeAAP(new string[1] { paramName }, saveAssetsTo, value, animLenght, assetName);
-        public static AnimationClip MakeAAP(string[] paramNames, string saveAssetsTo, float value = 0, float animLenght = 1, string assetName = "")
+        public static AnimationClip MakeAAP(string paramName, string saveAssetsTo, float value = 0, float animLength = 1, string assetName = "") => MakeAAP(new[] { paramName }, saveAssetsTo, value, animLength, assetName);
+
+        public static AnimationClip MakeAAP(string[] paramNames, string saveAssetsTo, float value = 0, float animLength = 1, string assetName = "")
         {
-            AnimationClip animClip;
-            if (paramNames.Length == 0) Debug.LogError("param list is empty!");
-            if (assetName == "") assetName = paramNames[0] + "_AAP " + value;
+            if (paramNames.Length == 0)
+                Debug.LogError("param list is empty!");
+            if (assetName == "")
+                assetName = paramNames[0] + "_AAP " + value;
             string saveName = assetName.Replace('/', '_');
-            animClip = (AnimationClip)AssetDatabase.LoadAssetAtPath(saveAssetsTo + saveName + ".anim", typeof(AnimationClip));
+            AnimationClip animClip = (AnimationClip)AssetDatabase.LoadAssetAtPath(saveAssetsTo + saveName + ".anim", typeof(AnimationClip));
             if (animClip != null)
-            {
                 return animClip;
-            }
+
             ReadyPath(saveAssetsTo);
 
-            animLenght /= 60f;
+            animLength /= 60f;
             animClip = new AnimationClip
             {
                 name = assetName,
@@ -301,7 +308,7 @@ namespace JeTeeS.TES.HelperFunctions
             {
                 AnimationCurve curve = new AnimationCurve();
                 curve.AddKey(0, value);
-                curve.AddKey(animLenght, value);
+                curve.AddKey(animLength, value);
                 animClip.SetCurve("", typeof(Animator), paramName, curve);
             }
 
@@ -311,6 +318,7 @@ namespace JeTeeS.TES.HelperFunctions
 
         public static string GetAssetPath(this UnityEngine.Object item) => AssetDatabase.GetAssetPath(item);
         public static void SaveToAsset(this UnityEngine.Object item, UnityEngine.Object saveTo) => AssetDatabase.AddObjectToAsset(item, AssetDatabase.GetAssetPath(saveTo));
+
         public static void SaveUnsavedAssetsToController(this AnimatorController controller)
         {
             Queue<ChildAnimatorStateMachine> childStateMachines = new Queue<ChildAnimatorStateMachine>();
@@ -319,39 +327,48 @@ namespace JeTeeS.TES.HelperFunctions
 
             foreach (AnimatorControllerLayer layer in controller.layers)
             {
-                if (GetAssetPath(layer.stateMachine) == "") layer.stateMachine.SaveToAsset(controller);
-                foreach (var state in layer.stateMachine.states) states.Add(state);
+                if (GetAssetPath(layer.stateMachine) == "")
+                    layer.stateMachine.SaveToAsset(controller);
+                foreach (var state in layer.stateMachine.states)
+                    states.Add(state);
 
                 foreach (ChildAnimatorStateMachine tempChildStateMachine in layer.stateMachine.stateMachines)
                 {
                     childStateMachines.Enqueue(tempChildStateMachine);
-                    foreach (ChildAnimatorState state in tempChildStateMachine.stateMachine.states) states.Add(state);
+                    foreach (ChildAnimatorState state in tempChildStateMachine.stateMachine.states)
+                        states.Add(state);
                 }
+
                 while (childStateMachines.Count > 0)
                 {
                     ChildAnimatorStateMachine childStateMachine = childStateMachines.Dequeue();
                     foreach (ChildAnimatorStateMachine tempChildStateMachine in childStateMachine.stateMachine.stateMachines)
                     {
                         childStateMachines.Enqueue(tempChildStateMachine);
-                        foreach (ChildAnimatorState state in tempChildStateMachine.stateMachine.states) states.Add(state);
+                        foreach (ChildAnimatorState state in tempChildStateMachine.stateMachine.states)
+                            states.Add(state);
                     }
-                    if (GetAssetPath(childStateMachine.stateMachine) == "") childStateMachine.stateMachine.SaveToAsset(controller);
+
+                    if (GetAssetPath(childStateMachine.stateMachine) == "")
+                        childStateMachine.stateMachine.SaveToAsset(controller);
                 }
+
                 foreach (AnimatorStateTransition anyState in layer.stateMachine.anyStateTransitions)
-                {
                     transitions.Add(anyState);
-                }
             }
+
             foreach (ChildAnimatorState state in states)
             {
-                foreach (AnimatorStateTransition transition in state.state.transitions) transitions.Add(transition);
-                if (GetAssetPath(state.state) == "") state.state.SaveToAsset(controller);
-                if (state.state.motion is BlendTree) SaveUnsavedBlendtreesToController((BlendTree)state.state.motion, controller);
+                foreach (AnimatorStateTransition transition in state.state.transitions)
+                    transitions.Add(transition);
+                if (GetAssetPath(state.state) == "")
+                    state.state.SaveToAsset(controller);
+                if (state.state.motion is BlendTree tree)
+                    SaveUnsavedBlendtreesToController(tree, controller);
             }
+
             foreach (AnimatorStateTransition transition in transitions)
-            {
                 if (GetAssetPath(transition) == "") transition.SaveToAsset(controller);
-            }
         }
 
         public static void SaveUnsavedBlendtreesToController(BlendTree blendTree, UnityEngine.Object saveTo)
@@ -363,9 +380,7 @@ namespace JeTeeS.TES.HelperFunctions
                 BlendTree subBlendTree = blendTrees.Dequeue();
                 if (GetAssetPath(subBlendTree) == "") subBlendTree.SaveToAsset(saveTo);
                 foreach (ChildMotion child in subBlendTree.children)
-                {
-                    if (child.motion is BlendTree) blendTrees.Enqueue((BlendTree)child.motion);
-                }
+                    if (child.motion is BlendTree tree) blendTrees.Enqueue(tree);
             }
         }
 
@@ -415,20 +430,16 @@ namespace JeTeeS.TES.HelperFunctions
             return smoothedParam;
         }
 
-        public static AnimatorControllerParameter AddParamDifferential(AnimatorControllerParameter param1, AnimatorControllerParameter param2, AnimatorController controller, string saveTo, float minValue = -1, float maxValue = 1, string differentialParamName = "", string mainBlendTreeIdentifier = "MainBlendTree", string mainBlendTreelayerName = "MainBlendTree", string differentialParentTreeName = "DifferentialParentTree", string constantOneName = "ConstantOne")
+        public static AnimatorControllerParameter AddParamDifferential(AnimatorControllerParameter param1, AnimatorControllerParameter param2, AnimatorController controller, string saveTo, float minValue = -1, float maxValue = 1, string differentialParamName = "", string mainBlendTreeIdentifier = "MainBlendTree", string mainBlendTreeLayerName = "MainBlendTree", string differentialParentTreeName = "DifferentialParentTree", string constantOneName = "ConstantOne")
         {
-            BlendTree differentialParentTree = GetOrGenerateChildTree(controller, differentialParentTreeName, mainBlendTreeIdentifier, mainBlendTreelayerName, constantOneName);
+            BlendTree differentialParentTree = GetOrGenerateChildTree(controller, differentialParentTreeName, mainBlendTreeIdentifier, mainBlendTreeLayerName, constantOneName);
             AnimatorControllerParameter constantOneParam = controller.AddUniqueParam(constantOneName, AnimatorControllerParameterType.Float, 1);
             if (differentialParamName == "")
             {
                 differentialParamName = param1.name + "_Minus_" + param2.name;
                 for (int i = 0; i < differentialParamName.Length; i++)
-                {
                     if (differentialParamName[i] == '/' || differentialParamName[i] == '\\')
-                    {
                         differentialParamName.Remove(i);
-                    }
-                }
             }
 
             AnimatorControllerParameter differentialParam = controller.AddUniqueParam(differentialParamName);
@@ -481,10 +492,11 @@ namespace JeTeeS.TES.HelperFunctions
                 tempChildren[tempChildren.Length - 1].directBlendParameter = constantOneParam.name;
                 differentialParentTree.children = tempChildren;
             }
+
             return differentialParam;
         }
 
-        public static BlendTree GetOrgenerateMainBlendTree(AnimatorController fxLayer, string mainBlendTreeIdentifier, string layerName, string constantOneName)
+        public static BlendTree GetOrGenerateMainBlendTree(AnimatorController fxLayer, string mainBlendTreeIdentifier, string layerName, string constantOneName)
             => GetMainBlendTree(fxLayer, mainBlendTreeIdentifier) ?? GenerateMainBlendTree(fxLayer, mainBlendTreeIdentifier, layerName, constantOneName);
 
         private static BlendTree GetMainBlendTree(AnimatorController fxLayer, string mainBlendTreeIdentifier)
@@ -492,9 +504,8 @@ namespace JeTeeS.TES.HelperFunctions
             List<AnimatorControllerLayer> mainBlendTrees = FindHiddenIdentifier(fxLayer, mainBlendTreeIdentifier);
 
             if (mainBlendTrees.Count > 0 && mainBlendTrees[0].stateMachine.states.Length > 0 && mainBlendTrees[0].stateMachine.states[0].state.motion is BlendTree)
-            {
                 return (BlendTree)mainBlendTrees[0].stateMachine.states[0].state.motion;
-            }
+
             return null;
         }
 
@@ -527,7 +538,7 @@ namespace JeTeeS.TES.HelperFunctions
 
         private static BlendTree GenerateChildTree(AnimatorController controller, string name, string mainBlendTreeIdentifier, string mainBlendTreeLayerName, string constantOneName)
         {
-            BlendTree mainBlendTree = GetOrgenerateMainBlendTree(controller, mainBlendTreeIdentifier, mainBlendTreeLayerName, constantOneName);
+            BlendTree mainBlendTree = GetOrGenerateMainBlendTree(controller, mainBlendTreeIdentifier, mainBlendTreeLayerName, constantOneName);
 
             BlendTree smoothedParentTree = new BlendTree()
             {
@@ -547,29 +558,25 @@ namespace JeTeeS.TES.HelperFunctions
 
         private static BlendTree GetChildTree(AnimatorController controller, string name, string mainBlendTreeIdentifier, string mainBlendTreeLayerName, string constantOneName)
         {
-            BlendTree mainBlendTree = GetOrgenerateMainBlendTree(controller, mainBlendTreeIdentifier, mainBlendTreeLayerName, constantOneName);
+            BlendTree mainBlendTree = GetOrGenerateMainBlendTree(controller, mainBlendTreeIdentifier, mainBlendTreeLayerName, constantOneName);
 
             foreach (ChildMotion child in mainBlendTree.children)
-            {
                 if (child.motion.name == name)
-                {
                     return (BlendTree)child.motion;
-                }
-            }
+
             return null;
         }
 
         public static int DecimalToBinary(this int i)
         {
-            if (i <= 0) { return 0; }
+            if (i <= 0)
+                return 0;
+
             string result = "";
             for (int j = i; j > 0; j /= 2)
-            {
                 result = (j % 2).ToString() + result;
-            }
+
             return Int32.Parse(result);
         }
-
     }
-
 }

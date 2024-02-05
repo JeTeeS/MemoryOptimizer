@@ -43,7 +43,7 @@ namespace JeTeeS.MemoryOptimizer
         private const string smoothedVerSuffix = "_S";
         private const string SmoothingTreeName = "SmoothingParentTree";
         private const string DifferentialTreeName = "DifferentialParentTree";
-        private const string Differentialsuffix = "_Delta";
+        private const string DifferentialSuffix = "_Delta";
         private const string constantOneName = prefix + "ConstantOne";
         private const string indexerParamName = prefix + "Indexer ";
         private const string boolSyncerParamName = prefix + "BoolSyncer ";
@@ -69,9 +69,12 @@ namespace JeTeeS.MemoryOptimizer
 
         public static bool FindInstallation(AnimatorController controller)
         {
-            if (controller == null) return false;
-            if (controller.FindHiddenIdentifier(syncingLayerIdentifier).Count == 1) return true;
-            if (controller.FindHiddenIdentifier(mainBlendTreeIdentifier).Count == 1) return true;
+            if (controller == null)
+                return false;
+            if (controller.FindHiddenIdentifier(syncingLayerIdentifier).Count == 1)
+                return true;
+            if (controller.FindHiddenIdentifier(mainBlendTreeIdentifier).Count == 1)
+                return true;
 
             return false;
         }
@@ -120,22 +123,18 @@ namespace JeTeeS.MemoryOptimizer
 
             string syncStepsBinary = (syncSteps - 1).DecimalToBinary().ToString();
             for (int i = 0; i < syncStepsBinary.Count(); i++)
-            {
                 AddUniqueSyncedParamToController(indexerParamName + (i + 1).ToString(), fxLayer, expressionParameters, AnimatorControllerParameterType.Bool, VRCExpressionParameters.ValueType.Bool);
-            }
 
             for (int j = 0; j < boolsToOptimize.Count / syncSteps; j++)
-            {
                 AddUniqueSyncedParamToController(boolSyncerParamName + j, optimizerState.FXController, optimizerState.expressionParameters, AnimatorControllerParameterType.Bool, VRCExpressionParameters.ValueType.Bool);
-            }
+
             for (int j = 0; j < intsNFloatsToOptimize.Count / syncSteps; j++)
-            {
                 AddUniqueSyncedParamToController(intNFloatSyncerParamName + j, optimizerState.FXController, optimizerState.expressionParameters, AnimatorControllerParameterType.Int, VRCExpressionParameters.ValueType.Int);
-            }
 
             CreateLocalRemoteSplit(optimizerState);
 
-            if(generateChangeCheck) { GenerateDeltas(optimizerState, generatedAssetsFilePath); }
+            if (generateChangeCheck)
+                GenerateDeltas(optimizerState, generatedAssetsFilePath);
 
             AnimatorState localEntryState = optimizerState.localStateMachine.AddState("Entry", new Vector3(0, 100, 0));
             localEntryState.hideFlags = HideFlags.HideInHierarchy;
@@ -151,28 +150,29 @@ namespace JeTeeS.MemoryOptimizer
             CreateParameterDrivers(optimizerState, syncSteps, generateChangeCheck);
 
             bool setWD = true;
-            if (wdOption == 0) 
+            if (wdOption == 0)
             {
                 int foundWD = fxLayer.FindWDInController();
                 if (foundWD == -1) setWD = true;
-                if (foundWD == 0) setWD = false;
-                if (foundWD == 1) setWD = true;
+                else if (foundWD == 0) setWD = false;
+                else if (foundWD == 1) setWD = true;
             }
             else if (wdOption == 1)
-            {
                 setWD = false;
-            }
             else
-            {
                 setWD = true;
-            }
+
             foreach (var state in optimizerState.syncingLayer.FindAllStatesInLayer()) state.state.writeDefaultValues = setWD;
 
             optimizerState.FXController.AddLayer(optimizerState.syncingLayer);
             optimizerState.FXController.SaveUnsavedAssetsToController();
 
-            foreach (var param in boolsToOptimize) { param.param.networkSynced = false; }
-            foreach (var param in intsNFloatsToOptimize) { param.param.networkSynced = false; }
+            foreach (var param in boolsToOptimize)
+                param.param.networkSynced = false;
+
+            foreach (var param in intsNFloatsToOptimize)
+                param.param.networkSynced = false;
+
             EditorUtility.SetDirty(expressionParameters);
 
             AssetDatabase.SaveAssets();
@@ -197,17 +197,15 @@ namespace JeTeeS.MemoryOptimizer
                     AnimatorControllerParameter paramCopy = optimizerState.FXController.AddUniqueParam(prefix + paramMatch.name + "_Copy");
                     optimizerState.boolsNIntsWithCopies.Add(paramMatch);
                     AnimatorControllerParameter smoothedParam = paramCopy.AddSmoothedVer(0, 1, optimizerState.FXController, prefix + paramCopy.name + smoothedVerSuffix, generatedAssetsFilePath, smoothingAmountParamName, mainBlendTreeIdentifier, mainBlendTreeLayerName, SmoothingTreeName, constantOneName);
-                    boolsDifferentials.Add(AddParamDifferential(paramCopy, smoothedParam, optimizerState.FXController, generatedAssetsFilePath, 0, 1, prefix + paramCopy.name + Differentialsuffix, mainBlendTreeIdentifier, mainBlendTreeLayerName, DifferentialTreeName, constantOneName));
+                    boolsDifferentials.Add(AddParamDifferential(paramCopy, smoothedParam, optimizerState.FXController, generatedAssetsFilePath, 0, 1, prefix + paramCopy.name + DifferentialSuffix, mainBlendTreeIdentifier, mainBlendTreeLayerName, DifferentialTreeName, constantOneName));
                 }
                 else if (paramMatch.type == AnimatorControllerParameterType.Float)
                 {
                     AnimatorControllerParameter smoothedParam = paramMatch.AddSmoothedVer(0, 1, optimizerState.FXController, prefix + paramMatch.name + smoothedVerSuffix, generatedAssetsFilePath, smoothingAmountParamName, mainBlendTreeIdentifier, mainBlendTreeLayerName, SmoothingTreeName, constantOneName);
-                    boolsDifferentials.Add(AddParamDifferential(paramMatch, smoothedParam, optimizerState.FXController, generatedAssetsFilePath, 0, 1, prefix + paramMatch.name + Differentialsuffix, mainBlendTreeIdentifier, mainBlendTreeLayerName, DifferentialTreeName, constantOneName));
+                    boolsDifferentials.Add(AddParamDifferential(paramMatch, smoothedParam, optimizerState.FXController, generatedAssetsFilePath, 0, 1, prefix + paramMatch.name + DifferentialSuffix, mainBlendTreeIdentifier, mainBlendTreeLayerName, DifferentialTreeName, constantOneName));
                 }
                 else
-                {
                     Debug.LogError("Param " + param.param.name + "is not bool, int or float!");
-                }
             }
 
             foreach (MemoryOptimizerListData param in intsNFloatsToOptimize)
@@ -219,19 +217,15 @@ namespace JeTeeS.MemoryOptimizer
                     AnimatorControllerParameter paramCopy = optimizerState.FXController.AddUniqueParam(prefix + paramMatch.name + "_Copy");
                     optimizerState.boolsNIntsWithCopies.Add(paramMatch);
                     AnimatorControllerParameter smoothedParam = paramCopy.AddSmoothedVer(0, 1, optimizerState.FXController, prefix + paramCopy.name + smoothedVerSuffix, generatedAssetsFilePath, smoothingAmountParamName, mainBlendTreeIdentifier, mainBlendTreeLayerName, SmoothingTreeName, constantOneName);
-                    intsNFloatsDifferentials.Add(AddParamDifferential(paramCopy, smoothedParam, optimizerState.FXController, generatedAssetsFilePath, 0, 1, prefix + paramCopy.name + Differentialsuffix, mainBlendTreeIdentifier, mainBlendTreeLayerName, DifferentialTreeName, constantOneName));
+                    intsNFloatsDifferentials.Add(AddParamDifferential(paramCopy, smoothedParam, optimizerState.FXController, generatedAssetsFilePath, 0, 1, prefix + paramCopy.name + DifferentialSuffix, mainBlendTreeIdentifier, mainBlendTreeLayerName, DifferentialTreeName, constantOneName));
                 }
                 else if (paramMatch.type == AnimatorControllerParameterType.Float)
                 {
                     AnimatorControllerParameter smoothedParam = paramMatch.AddSmoothedVer(-1, 1, optimizerState.FXController, prefix + paramMatch.name + smoothedVerSuffix, generatedAssetsFilePath, smoothingAmountParamName, mainBlendTreeIdentifier, mainBlendTreeLayerName, SmoothingTreeName, constantOneName);
-                    intsNFloatsDifferentials.Add(AddParamDifferential(paramMatch, smoothedParam, optimizerState.FXController, generatedAssetsFilePath, -1, 1, prefix + paramMatch.name + Differentialsuffix, mainBlendTreeIdentifier, mainBlendTreeLayerName, DifferentialTreeName, constantOneName));
+                    intsNFloatsDifferentials.Add(AddParamDifferential(paramMatch, smoothedParam, optimizerState.FXController, generatedAssetsFilePath, -1, 1, prefix + paramMatch.name + DifferentialSuffix, mainBlendTreeIdentifier, mainBlendTreeLayerName, DifferentialTreeName, constantOneName));
                 }
                 else
-                {
                     Debug.LogError("Param " + param.param.name + "is not bool, int or float!");
-                }
-
-
             }
 
             optimizerState.boolsDifferentials = boolsDifferentials;
@@ -251,7 +245,7 @@ namespace JeTeeS.MemoryOptimizer
             AnimatorStateMachine localStateMachine = optimizerState.localStateMachine;
 
             string syncStepsBinary = (syncSteps - 1).DecimalToBinary().ToString();
-           
+
             AnimatorState waitForIndexer = remoteStateMachine.AddState("WaitForIndexer", new Vector3(0, 400, 0));
             waitForIndexer.hideFlags = HideFlags.HideInHierarchy;
             waitForIndexer.motion = optimizerState.oneFrameBuffer;
@@ -260,9 +254,7 @@ namespace JeTeeS.MemoryOptimizer
             {
                 string currentIndex = i.DecimalToBinary().ToString();
                 while (currentIndex.Length < syncStepsBinary.Length)
-                {
                     currentIndex = "0" + currentIndex;
-                }
 
                 AnimatorStateTransition toSetterTransition = new AnimatorStateTransition()
                 {
@@ -343,18 +335,14 @@ namespace JeTeeS.MemoryOptimizer
 
                 //add the transitions from remote set states to the wait state
                 foreach (AnimatorStateTransition transition in toWaitTransitions)
-                {
                     remoteSetStates[i].AddTransition(transition);
-                }
 
                 //add transition from wait state to current set state
                 waitForIndexer.AddTransition(toSetterTransition);
             }
 
             for (int i = 0; i < localSetStates.Count; i++)
-            {
                 localSetStates[i].AddTransition(new AnimatorStateTransition() { destinationState = localSetStates[(i + 1) % localSetStates.Count], exitTime = stepDelay, hasExitTime = true, hasFixedDuration = true, duration = 0f, hideFlags = HideFlags.HideInHierarchy });
-            }
         }
 
         private static void CreateParameterDrivers(MemoryOptimizerState optimizerState, int syncSteps, bool generateChangeCheck)
@@ -372,9 +360,7 @@ namespace JeTeeS.MemoryOptimizer
             {
                 string currentIndex = i.DecimalToBinary().ToString();
                 while (currentIndex.Length < syncStepsBinary.Length)
-                {
                     currentIndex = "0" + currentIndex;
-                }
 
                 localSettersParameterDrivers.Add(new ParamDriversAndStates());
                 localSettersParameterDrivers.Last().states.Add(localSetStates[i]);
@@ -382,10 +368,8 @@ namespace JeTeeS.MemoryOptimizer
                 {
                     localSettersParameterDrivers.Last().states.Add(localResetStates[i]);
 
-                    foreach(AnimatorControllerParameter param in optimizerState.boolsNIntsWithCopies)
-                    {
+                    foreach (AnimatorControllerParameter param in optimizerState.boolsNIntsWithCopies)
                         localSettersParameterDrivers.Last().paramDriver.parameters.Add(new VRC_AvatarParameterDriver.Parameter() { name = prefix + param.name + "_Copy", source = param.name, type = VRC_AvatarParameterDriver.ChangeType.Copy });
-                    }
                 }
 
                 remoteSettersParameterDrivers.Add(new ParamDriversAndStates());
@@ -465,9 +449,7 @@ namespace JeTeeS.MemoryOptimizer
                             });
                     }
                     else
-                    {
                         Debug.LogError(param.name + " is not an int or a float!");
-                    }
                 }
             }
 
@@ -489,9 +471,7 @@ namespace JeTeeS.MemoryOptimizer
                 //convert i to binary so it can be used for the binary counter
                 string currentIndex = i.DecimalToBinary().ToString();
                 while (currentIndex.Length < syncStepsBinary.Length)
-                {
                     currentIndex = "0" + currentIndex;
-                }
 
                 //add the local set and reset states
                 localSetStates.Add(localStateMachine.AddState("Set Value " + (i + 1), AngleRadiusToPos(((float)i / syncSteps + 0.5f) * (float)Math.PI * 2f, 400f, new Vector3(0, 600, 0))));
@@ -622,21 +602,18 @@ namespace JeTeeS.MemoryOptimizer
             List<VRCExpressionParameters.Parameter> optimizedParams = new List<VRCExpressionParameters.Parameter>();
             List<AnimatorControllerParameter> generatedAnimatorParams = new List<AnimatorControllerParameter>();
             foreach (AnimatorControllerParameter controllerParam in fxLayer.parameters)
-            {
                 if (controllerParam.name.Contains(prefix))
-                {
                     generatedAnimatorParams.Add(controllerParam);
-                }
-            }
 
             List<AnimatorControllerLayer> mainBlendTreeLayers = fxLayer.FindHiddenIdentifier(mainBlendTreeIdentifier);
             List<AnimatorControllerLayer> syncingLayers = fxLayer.FindHiddenIdentifier(syncingLayerIdentifier);
 
             if (mainBlendTreeLayers.Count > 1)
             {
-                Debug.LogError("Too many memory optimizer blendtrees found, unable to unintall automatically!");
+                Debug.LogError("Too many memory optimizer blendtrees found, unable to uninstall automatically!");
                 return;
             }
+
             if (syncingLayers.Count != 1)
             {
                 Debug.LogError(syncingLayers.Count + " syncing layers found, unable to uninstall automatically");
@@ -650,64 +627,57 @@ namespace JeTeeS.MemoryOptimizer
                 VRCAvatarParameterDriver paramdriver = (VRCAvatarParameterDriver)state.state.behaviours[0];
                 List<VRC_AvatarParameterDriver.Parameter> paramdriverParams = paramdriver.parameters;
                 foreach (VRC_AvatarParameterDriver.Parameter param in paramdriverParams)
-                {
                     if (!String.IsNullOrEmpty(param.source))
-                    {
                         foreach (VRCExpressionParameters.Parameter item in expressionParameters.parameters.Where(x => x.name == param.source))
-                        {
                             optimizedParams.Add(item);
-                        }
-                    }
-                }
             }
 
             foreach (VRCExpressionParameters.Parameter item in expressionParameters.parameters.Where(x => x.name.Contains(prefix)))
-            {
                 generatedExpressionParams.Add(item);
-            }
 
             if (generatedExpressionParams.Count <= 0)
             {
                 Debug.LogError("Too few generated expression parameters found! Only " + generatedExpressionParams.Count + " found. Aborting uninstall...");
                 return;
             }
+
             if (generatedAnimatorParams.Count <= 0)
             {
                 Debug.LogError("Too few generated animator parameters found! Only " + generatedAnimatorParams.Count + " found. Aborting uninstall...");
                 return;
             }
+
             if (optimizedParams.Count < 2)
             {
                 Debug.LogError("Too few optimized parameters found! Only " + optimizedParams.Count + " found. Aborting uninstall...");
                 return;
             }
 
-            foreach(AnimatorControllerLayer mainBlendTreeLayer in mainBlendTreeLayers)
+            foreach (AnimatorControllerLayer mainBlendTreeLayer in mainBlendTreeLayers)
             {
-
                 //Debug.Log("Animator layer " + mainBlendTreeLayer.name + " of index " + fxLayer.FindLayerIndex(mainBlendTreeLayer) + " is being deleted");
                 fxLayer.RemoveLayer(mainBlendTreeLayer);
             }
 
             foreach (AnimatorControllerLayer syncingLayer in syncingLayers)
             {
-
                 //Debug.Log("Animator layer " + syncingLayer.name + " of index " + fxLayer.FindLayerIndex(syncingLayer) + " is being deleted");
                 fxLayer.RemoveLayer(syncingLayer);
             }
 
             foreach (VRCExpressionParameters.Parameter param in generatedExpressionParams)
             {
-
                 //Debug.Log("Expression param " + param.name + "  of type: " + param.valueType + " is being deleted");
                 expressionParameters.parameters = expressionParameters.parameters.Where(x => x != param).ToArray();
             }
+
             foreach (AnimatorControllerParameter param in generatedAnimatorParams)
             {
 
                 //Debug.Log("Controller param " + param.name + "  of type: " + param.type + " is being deleted");
                 fxLayer.RemoveParameter(param);
             }
+
             foreach (VRCExpressionParameters.Parameter param in optimizedParams)
             {
                 //Debug.Log("Optimized param " + param.name + "  of type: " + param.valueType + " setting to sync");
