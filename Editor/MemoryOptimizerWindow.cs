@@ -159,7 +159,7 @@ namespace JeTeeS.MemoryOptimizer
 
                         if (GUILayout.Button("Deselect Prefix"))
                         {
-                            string name = EditorInputDialog.Show("Question", "Please enter your prefix to deselect", "");
+                            string name = EditorInputDialog.Show("", "Please enter your prefix to deselect", "");
                             if (!string.IsNullOrEmpty(name))
                                 foreach (MemoryOptimizerMain.MemoryOptimizerListData param in paramList.FindAll(x => x.param.name.StartsWith(name))) param.selected = false;
 
@@ -543,6 +543,7 @@ namespace JeTeeS.MemoryOptimizer
             Action onOKButton;
 
             bool shouldClose = false;
+            Vector2 maxScreenPos;
 
             #region OnGUI()
             void OnGUI()
@@ -556,6 +557,7 @@ namespace JeTeeS.MemoryOptimizer
                         // Escape pressed
                         case KeyCode.Escape:
                             shouldClose = true;
+                            e.Use();
                             break;
 
                         // Enter pressed
@@ -563,6 +565,7 @@ namespace JeTeeS.MemoryOptimizer
                         case KeyCode.KeypadEnter:
                             onOKButton?.Invoke();
                             shouldClose = true;
+                            e.Use();
                             break;
                     }
                 }
@@ -611,11 +614,20 @@ namespace JeTeeS.MemoryOptimizer
                 }
 
                 // Set dialog position next to mouse position
-                if (!initializedPosition)
+                if (!initializedPosition && e.type == EventType.Layout)
                 {
-                    var mousePos = GUIUtility.GUIToScreenPoint(Event.current.mousePosition);
-                    position = new Rect(mousePos.x + 32, mousePos.y, position.width, position.height);
                     initializedPosition = true;
+
+                    // Move window to a new position. Make sure we're inside visible window
+                    var mousePos = GUIUtility.GUIToScreenPoint(Event.current.mousePosition);
+                    mousePos.x += 32;
+                    if (mousePos.x + position.width > maxScreenPos.x) mousePos.x -= position.width + 64; // Display on left side of mouse
+                    if (mousePos.y + position.height > maxScreenPos.y) mousePos.y = maxScreenPos.y - position.height;
+
+                    position = new Rect(mousePos.x, mousePos.y, position.width, position.height);
+
+                    // Focus current window
+                    Focus();
                 }
             }
             #endregion OnGUI()
@@ -632,15 +644,21 @@ namespace JeTeeS.MemoryOptimizer
             /// <returns></returns>
             public static string Show(string title, string description, string inputText, string okButton = "OK", string cancelButton = "Cancel")
             {
+                // Make sure our popup is always inside parent window, and never offscreen
+                // So get caller's window size
+                var maxPos = GUIUtility.GUIToScreenPoint(new Vector2(Screen.width, Screen.height));
+
                 string ret = null;
                 //var window = EditorWindow.GetWindow<InputDialog>();
                 var window = CreateInstance<EditorInputDialog>();
+                window.maxScreenPos = maxPos;
                 window.titleContent = new GUIContent(title);
                 window.description = description;
                 window.inputText = inputText;
                 window.okButton = okButton;
                 window.cancelButton = cancelButton;
                 window.onOKButton += () => ret = window.inputText;
+                //window.ShowPopup();
                 window.ShowModal();
 
                 return ret;
