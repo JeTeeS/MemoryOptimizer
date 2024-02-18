@@ -535,6 +535,7 @@ namespace JeTeeS.MemoryOptimizer
         }
 
         //https://forum.unity.com/threads/is-there-a-way-to-input-text-using-a-unity-editor-utility.473743/#post-7191802
+        //https://forum.unity.com/threads/is-there-a-way-to-input-text-using-a-unity-editor-utility.473743/#post-7229248
         public class EditorInputDialog : EditorWindow
         {
             string description, inputText;
