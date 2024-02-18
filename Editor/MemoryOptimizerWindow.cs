@@ -159,9 +159,11 @@ namespace JeTeeS.MemoryOptimizer
 
                         if (GUILayout.Button("Deselect Prefix"))
                         {
-                            string name = EditorInputDialog.Show("", "Please enter your prefix to deselect", "");
-                            if (!string.IsNullOrEmpty(name))
-                                foreach (MemoryOptimizerMain.MemoryOptimizerListData param in paramList.FindAll(x => x.param.name.StartsWith(name))) param.selected = false;
+                            EditorInputDialog.Show("", "Please enter your prefix to deselect", "", name =>
+                            {
+                                if (!string.IsNullOrEmpty(name))
+                                    foreach (MemoryOptimizerMain.MemoryOptimizerListData param in paramList.FindAll(x => x.param.name.StartsWith(name, true, null))) param.selected = false;
+                            });
 
                             OnChangeUpdate();
                         }
@@ -536,6 +538,7 @@ namespace JeTeeS.MemoryOptimizer
 
         //https://forum.unity.com/threads/is-there-a-way-to-input-text-using-a-unity-editor-utility.473743/#post-7191802
         //https://forum.unity.com/threads/is-there-a-way-to-input-text-using-a-unity-editor-utility.473743/#post-7229248
+        //Thanks to JelleJurre for help
         public class EditorInputDialog : EditorWindow
         {
             string description, inputText;
@@ -643,14 +646,16 @@ namespace JeTeeS.MemoryOptimizer
             /// <param name="okButton"></param>
             /// <param name="cancelButton"></param>
             /// <returns></returns>
-            public static string Show(string title, string description, string inputText, string okButton = "OK", string cancelButton = "Cancel")
+            //public static string Show(string title, string description, string inputText, string okButton = "OK", string cancelButton = "Cancel")
+            public static void Show(string title, string description, string inputText, Action<string> callBack, string okButton = "OK", string cancelButton = "Cancel")
             {
                 // Make sure our popup is always inside parent window, and never offscreen
                 // So get caller's window size
                 var maxPos = GUIUtility.GUIToScreenPoint(new Vector2(Screen.width, Screen.height));
 
-                string ret = null;
-                //var window = EditorWindow.GetWindow<InputDialog>();
+                if (EditorWindow.HasOpenInstances<EditorInputDialog>())
+                    return;
+
                 var window = CreateInstance<EditorInputDialog>();
                 window.maxScreenPos = maxPos;
                 window.titleContent = new GUIContent(title);
@@ -658,11 +663,8 @@ namespace JeTeeS.MemoryOptimizer
                 window.inputText = inputText;
                 window.okButton = okButton;
                 window.cancelButton = cancelButton;
-                window.onOKButton += () => ret = window.inputText;
+                window.onOKButton += () => callBack(window.inputText);
                 window.ShowPopup();
-                //window.ShowModal();
-
-                return ret;
             }
             #endregion Show()
         }
