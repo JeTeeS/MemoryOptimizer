@@ -367,31 +367,29 @@ namespace JeTeeS.MemoryOptimizer
 
             boolsToOptimize = paramList.FindAll(x => x.selected && x.param.valueType == VRCExpressionParameters.ValueType.Bool);
             selectedBools = boolsToOptimize.Count();
-            boolsToOptimize = boolsToOptimize.Take(boolsToOptimize.Count() - (boolsToOptimize.Count() % syncSteps)).ToList();
-
             intsNFloatsToOptimize = paramList.FindAll(x => x.selected && (x.param.valueType == VRCExpressionParameters.ValueType.Int || x.param.valueType == VRCExpressionParameters.ValueType.Float));
             selectedIntsNFloats = intsNFloatsToOptimize.Count();
-            intsNFloatsToOptimize = intsNFloatsToOptimize.Take(intsNFloatsToOptimize.Count() - (intsNFloatsToOptimize.Count() % syncSteps)).ToList();
 
-            maxSyncSteps = new[] { selectedBools, selectedIntsNFloats }.Max();
-            if (maxSyncSteps < 1)
-                maxSyncSteps = 1;
-            else if (maxSyncSteps > 1 && syncSteps < 2)
+            newParamCost = selectedBools + (selectedIntsNFloats * 8);
+
+            maxSyncSteps = Math.Max(Math.Max(selectedBools, selectedIntsNFloats), 1);
+            if (maxSyncSteps == 1)
+                return;
+            if (syncSteps < 2)
                 syncSteps = 2;
-            else if (syncSteps < 2)
-                newParamCost = selectedBools + (selectedIntsNFloats * 8);
-            else
-            {
-                foreach (MemoryOptimizerMain.MemoryOptimizerListData x in boolsToOptimize)
-                    x.willBeOptimized = true;
 
-                foreach (MemoryOptimizerMain.MemoryOptimizerListData x in intsNFloatsToOptimize)
-                    x.willBeOptimized = true;
+            boolsToOptimize = boolsToOptimize.Take(selectedBools - (selectedBools % syncSteps)).ToList();
+            intsNFloatsToOptimize = intsNFloatsToOptimize.Take(selectedIntsNFloats - (selectedIntsNFloats % syncSteps)).ToList();
+            
+            foreach (MemoryOptimizerMain.MemoryOptimizerListData param in boolsToOptimize)
+                param.willBeOptimized = true;
+            foreach (MemoryOptimizerMain.MemoryOptimizerListData param in intsNFloatsToOptimize)
+                param.willBeOptimized = true;
 
-                int syncBitCost = (syncSteps - 1).DecimalToBinary().ToString().Count();
+            int syncBitCost = (syncSteps - 1).DecimalToBinary().ToString().Count();
 
-                newParamCost = (boolsToOptimize.Count / syncSteps) + (intsNFloatsToOptimize.Count / syncSteps * 8) + syncBitCost + (selectedBools - boolsToOptimize.Count) + ((selectedIntsNFloats - intsNFloatsToOptimize.Count) * 8);
-            }
+            newParamCost = (boolsToOptimize.Count / syncSteps) + (intsNFloatsToOptimize.Count / syncSteps * 8) + syncBitCost + (selectedBools - boolsToOptimize.Count) + ((selectedIntsNFloats - intsNFloatsToOptimize.Count) * 8);
+            
         }
 
         public void ResetParamSelection()
