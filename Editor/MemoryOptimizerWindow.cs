@@ -659,8 +659,8 @@ namespace JeTeeS.MemoryOptimizer
                 window.okButton = okButton;
                 window.cancelButton = cancelButton;
                 window.onOKButton += () => ret = window.inputText;
-                //window.ShowPopup();
-                window.ShowModal();
+                window.ShowPopup();
+                //window.ShowModal();
 
                 return ret;
             }
