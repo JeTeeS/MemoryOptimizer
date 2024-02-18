@@ -157,6 +157,17 @@ namespace JeTeeS.MemoryOptimizer
                     {
                         EditorGUILayout.LabelField("Avatar Parameters: ", EditorStyles.boldLabel);
 
+                        if (GUILayout.Button("Deselect Prefix"))
+                        {
+                            EditorInputDialog.Show("", "Please enter your prefix to deselect", "", name =>
+                            {
+                                if (!string.IsNullOrEmpty(name))
+                                    foreach (MemoryOptimizerMain.MemoryOptimizerListData param in paramList.FindAll(x => x.param.name.StartsWith(name, true, null))) param.selected = false;
+                            });
+
+                            OnChangeUpdate();
+                        }
+
                         if (GUILayout.Button("Select All"))
                         {
                             foreach (MemoryOptimizerMain.MemoryOptimizerListData param in paramList) param.selected = true;
@@ -367,31 +378,29 @@ namespace JeTeeS.MemoryOptimizer
 
             boolsToOptimize = paramList.FindAll(x => x.selected && x.param.valueType == VRCExpressionParameters.ValueType.Bool);
             selectedBools = boolsToOptimize.Count();
-            boolsToOptimize = boolsToOptimize.Take(boolsToOptimize.Count() - (boolsToOptimize.Count() % syncSteps)).ToList();
-
             intsNFloatsToOptimize = paramList.FindAll(x => x.selected && (x.param.valueType == VRCExpressionParameters.ValueType.Int || x.param.valueType == VRCExpressionParameters.ValueType.Float));
             selectedIntsNFloats = intsNFloatsToOptimize.Count();
-            intsNFloatsToOptimize = intsNFloatsToOptimize.Take(intsNFloatsToOptimize.Count() - (intsNFloatsToOptimize.Count() % syncSteps)).ToList();
 
-            maxSyncSteps = new[] { selectedBools, selectedIntsNFloats }.Max();
-            if (maxSyncSteps < 1)
-                maxSyncSteps = 1;
-            else if (maxSyncSteps > 1 && syncSteps < 2)
+            newParamCost = selectedBools + (selectedIntsNFloats * 8);
+
+            maxSyncSteps = Math.Max(Math.Max(selectedBools, selectedIntsNFloats), 1);
+            if (maxSyncSteps == 1)
+                return;
+            if (syncSteps < 2)
                 syncSteps = 2;
-            else if (syncSteps < 2)
-                newParamCost = selectedBools + (selectedIntsNFloats * 8);
-            else
-            {
-                foreach (MemoryOptimizerMain.MemoryOptimizerListData x in boolsToOptimize)
-                    x.willBeOptimized = true;
 
-                foreach (MemoryOptimizerMain.MemoryOptimizerListData x in intsNFloatsToOptimize)
-                    x.willBeOptimized = true;
+            boolsToOptimize = boolsToOptimize.Take(selectedBools - (selectedBools % syncSteps)).ToList();
+            intsNFloatsToOptimize = intsNFloatsToOptimize.Take(selectedIntsNFloats - (selectedIntsNFloats % syncSteps)).ToList();
+            
+            foreach (MemoryOptimizerMain.MemoryOptimizerListData param in boolsToOptimize)
+                param.willBeOptimized = true;
+            foreach (MemoryOptimizerMain.MemoryOptimizerListData param in intsNFloatsToOptimize)
+                param.willBeOptimized = true;
 
-                int syncBitCost = (syncSteps - 1).DecimalToBinary().ToString().Count();
+            int syncBitCost = (syncSteps - 1).DecimalToBinary().ToString().Count();
 
-                newParamCost = (boolsToOptimize.Count / syncSteps) + (intsNFloatsToOptimize.Count / syncSteps * 8) + syncBitCost + (selectedBools - boolsToOptimize.Count) + ((selectedIntsNFloats - intsNFloatsToOptimize.Count) * 8);
-            }
+            newParamCost = (boolsToOptimize.Count / syncSteps) + (intsNFloatsToOptimize.Count / syncSteps * 8) + syncBitCost + (selectedBools - boolsToOptimize.Count) + ((selectedIntsNFloats - intsNFloatsToOptimize.Count) * 8);
+            
         }
 
         public void ResetParamSelection()
@@ -525,6 +534,139 @@ namespace JeTeeS.MemoryOptimizer
             {
                 return new SqueezeSettings { width1 = val.Item1, width2 = val.Item2, type = val.Item3, style = val.Item4 };
             }
+        }
+
+        //https://forum.unity.com/threads/is-there-a-way-to-input-text-using-a-unity-editor-utility.473743/#post-7191802
+        //https://forum.unity.com/threads/is-there-a-way-to-input-text-using-a-unity-editor-utility.473743/#post-7229248
+        //Thanks to JelleJurre for help
+        public class EditorInputDialog : EditorWindow
+        {
+            string description, inputText;
+            string okButton, cancelButton;
+            bool initializedPosition = false;
+            Action onOKButton;
+
+            bool shouldClose = false;
+            Vector2 maxScreenPos;
+
+            #region OnGUI()
+            void OnGUI()
+            {
+                // Check if Esc/Return have been pressed
+                var e = Event.current;
+                if (e.type == EventType.KeyDown)
+                {
+                    switch (e.keyCode)
+                    {
+                        // Escape pressed
+                        case KeyCode.Escape:
+                            shouldClose = true;
+                            e.Use();
+                            break;
+
+                        // Enter pressed
+                        case KeyCode.Return:
+                        case KeyCode.KeypadEnter:
+                            onOKButton?.Invoke();
+                            shouldClose = true;
+                            e.Use();
+                            break;
+                    }
+                }
+
+                if (shouldClose)
+                {  // Close this dialog
+                    Close();
+                    //return;
+                }
+
+                // Draw our control
+                var rect = EditorGUILayout.BeginVertical();
+
+                EditorGUILayout.Space(12);
+                EditorGUILayout.LabelField(description);
+
+                EditorGUILayout.Space(8);
+                GUI.SetNextControlName("inText");
+                inputText = EditorGUILayout.TextField("", inputText);
+                GUI.FocusControl("inText");   // Focus text field
+                EditorGUILayout.Space(12);
+
+                // Draw OK / Cancel buttons
+                var r = EditorGUILayout.GetControlRect();
+                r.width /= 2;
+                if (GUI.Button(r, okButton))
+                {
+                    onOKButton?.Invoke();
+                    shouldClose = true;
+                }
+
+                r.x += r.width;
+                if (GUI.Button(r, cancelButton))
+                {
+                    inputText = null;   // Cancel - delete inputText
+                    shouldClose = true;
+                }
+
+                EditorGUILayout.Space(8);
+                EditorGUILayout.EndVertical();
+
+                // Force change size of the window
+                if (rect.width != 0 && minSize != rect.size)
+                {
+                    minSize = maxSize = rect.size;
+                }
+
+                // Set dialog position next to mouse position
+                if (!initializedPosition && e.type == EventType.Layout)
+                {
+                    initializedPosition = true;
+
+                    // Move window to a new position. Make sure we're inside visible window
+                    var mousePos = GUIUtility.GUIToScreenPoint(Event.current.mousePosition);
+                    mousePos.x += 32;
+                    if (mousePos.x + position.width > maxScreenPos.x) mousePos.x -= position.width + 64; // Display on left side of mouse
+                    if (mousePos.y + position.height > maxScreenPos.y) mousePos.y = maxScreenPos.y - position.height;
+
+                    position = new Rect(mousePos.x, mousePos.y, position.width, position.height);
+
+                    // Focus current window
+                    Focus();
+                }
+            }
+            #endregion OnGUI()
+
+            #region Show()
+            /// <summary>
+            /// Returns text player entered, or null if player cancelled the dialog.
+            /// </summary>
+            /// <param name="title"></param>
+            /// <param name="description"></param>
+            /// <param name="inputText"></param>
+            /// <param name="okButton"></param>
+            /// <param name="cancelButton"></param>
+            /// <returns></returns>
+            //public static string Show(string title, string description, string inputText, string okButton = "OK", string cancelButton = "Cancel")
+            public static void Show(string title, string description, string inputText, Action<string> callBack, string okButton = "OK", string cancelButton = "Cancel")
+            {
+                // Make sure our popup is always inside parent window, and never offscreen
+                // So get caller's window size
+                var maxPos = GUIUtility.GUIToScreenPoint(new Vector2(Screen.width, Screen.height));
+
+                if (EditorWindow.HasOpenInstances<EditorInputDialog>())
+                    return;
+
+                var window = CreateInstance<EditorInputDialog>();
+                window.maxScreenPos = maxPos;
+                window.titleContent = new GUIContent(title);
+                window.description = description;
+                window.inputText = inputText;
+                window.okButton = okButton;
+                window.cancelButton = cancelButton;
+                window.onOKButton += () => callBack(window.inputText);
+                window.ShowPopup();
+            }
+            #endregion Show()
         }
     }
 }
