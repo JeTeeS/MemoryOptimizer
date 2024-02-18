@@ -61,3 +61,13 @@
 
 - General code clean up
 - New readme
+
+## [0.1.6] - 2024-2-19
+
+### Fixes
+
+- Fix OnChangeUpdate
+
+### Added
+
+- Deselect Prefix button
