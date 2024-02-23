@@ -439,8 +439,12 @@ namespace JeTeeS.MemoryOptimizer
         public void ResetParamSelection()
         {
             paramList = new List<MemoryOptimizerMain.MemoryOptimizerListData>();
-            foreach (VRCExpressionParameters.Parameter param in expressionParameters.parameters)
-                paramList.Add(new MemoryOptimizerMain.MemoryOptimizerListData(param, false, false));
+
+            if (expressionParameters.parameters.Length > 0)
+            {
+                foreach (VRCExpressionParameters.Parameter param in expressionParameters.parameters)
+                    paramList.Add(new MemoryOptimizerMain.MemoryOptimizerListData(param, false, false));
+            }
 
             maxSyncSteps = 1;
             syncSteps = 1;
@@ -451,10 +455,13 @@ namespace JeTeeS.MemoryOptimizer
         {
             if (descriptor == null)
                 avatarDescriptor = FindObjectOfType<VRCAvatarDescriptor>();
-            if (controller == null)
-                avatarFXLayer = FindFXLayer(avatarDescriptor);
-            if (parameters == null)
-                expressionParameters = FindExpressionParams(avatarDescriptor);
+            else
+            {
+                if (controller == null)
+                    avatarFXLayer = FindFXLayer(avatarDescriptor);
+                if (parameters == null)
+                    expressionParameters = FindExpressionParams(avatarDescriptor);
+            }
 
             OnChangeUpdate();
         }
