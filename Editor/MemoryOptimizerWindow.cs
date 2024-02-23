@@ -378,16 +378,19 @@ namespace JeTeeS.MemoryOptimizer
                 unlockSyncSteps = EditorPrefs.GetBool(unlockSyncStepsEPKey);
                 backupMode = EditorPrefs.GetInt(backUpModeEPKey);
 
-                EditorGUILayout.LabelField("Backup Mode: ", EditorStyles.boldLabel);
-                backupMode = EditorGUILayout.Popup(backupMode, backupModes, new GUIStyle(EditorStyles.popup) { fixedHeight = 18, stretchWidth = false });
+                using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
+                {
+                    EditorGUILayout.LabelField("Backup Mode: ", EditorStyles.boldLabel);
+                    backupMode = EditorGUILayout.Popup(backupMode, backupModes, new GUIStyle(EditorStyles.popup) { fixedHeight = 18, stretchWidth = false });
+                }
 
                 if (unlockSyncSteps)
                     GUI.backgroundColor = Color.green;
                 else 
                     GUI.backgroundColor = Color.red;
-                if (GUILayout.Button("Unlock sync steps"))
-                    EditorPrefs.SetBool(unlockSyncStepsEPKey, !unlockSyncSteps);
-                GUI.backgroundColor = Color.white;
+                using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
+                    if (GUILayout.Button("Unlock sync steps"))
+                        EditorPrefs.SetBool(unlockSyncStepsEPKey, !unlockSyncSteps);
 
                 
             }
