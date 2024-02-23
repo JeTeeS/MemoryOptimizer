@@ -11,6 +11,23 @@ namespace JeTeeS.TES.HelperFunctions
 {
     public static class TESHelperFunctions
     {
+        public static void MakeBackupOf(List<UnityEngine.Object> things, string saveTo)
+        {
+            ReadyPath(saveTo);
+            foreach (UnityEngine.Object obj in things)
+            {
+                int i = 0;
+                List<string> splitAssetname = GetAssetName(obj).Split(".").ToList();
+                string assetName = "";
+                foreach (string strng in splitAssetname.Take(splitAssetname.Count - 1))
+                    assetName += strng;
+
+                while (System.IO.File.Exists(saveTo + assetName + $" ({i})." + splitAssetname.Last()))
+                    i++;
+                if (!AssetDatabase.CopyAsset(AssetDatabase.GetAssetPath(obj), saveTo + assetName + $" ({i})." + splitAssetname.Last()))
+                    Debug.LogWarning($"Failed to copy '{AssetDatabase.GetAssetPath(obj)}' to path: {saveTo + assetName + $" ({i})." + splitAssetname.Last()}");
+            }
+        }
         public static string GetFileType(UnityEngine.Object obj)
         {
             string fileName = GetAssetName(obj);
