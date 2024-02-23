@@ -382,9 +382,9 @@ namespace JeTeeS.MemoryOptimizer
                     GUI.backgroundColor = Color.green;
                 else 
                     GUI.backgroundColor = Color.red;
-                using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
-                    if (GUILayout.Button("Unlock sync steps"))
-                        EditorPrefs.SetBool(unlockSyncStepsEPKey, !unlockSyncSteps);
+
+                if (GUILayout.Button("Unlock sync steps"))
+                    EditorPrefs.SetBool(unlockSyncStepsEPKey, !unlockSyncSteps);
 
                 GUI.backgroundColor = Color.white;
             }
