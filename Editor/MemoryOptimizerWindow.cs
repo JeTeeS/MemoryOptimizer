@@ -355,6 +355,13 @@ namespace JeTeeS.MemoryOptimizer
                     {
                         if (GUILayout.Button("Install"))
                         {
+                            backupMode = EditorPrefs.GetInt(backUpModeEPKey);
+                            if (backupMode == 0)
+                                MakeBackupOf(new List<UnityEngine.Object> {avatarFXLayer, expressionParameters}, mainSavePath + "Backup/");
+                            else if (backupMode == 2)
+                                if (EditorUtility.DisplayDialog("", "Do you want to make a backup of your controller and parameters?", "Yes", "No"))
+                                    MakeBackupOf(new List<UnityEngine.Object> { avatarFXLayer, expressionParameters }, mainSavePath + "Backup/");
+
                             MemoryOptimizerMain.InstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters, boolsToOptimize, intsNFloatsToOptimize, syncSteps, stepDelay, changeCheckEnabled, wdOptionSelected, mainSavePath);
                         }
                     }
