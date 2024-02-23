@@ -306,7 +306,7 @@ namespace JeTeeS.MemoryOptimizer
                             {
                                 GUILayout.Label("Syncing Steps", GUILayout.MaxWidth(100));
                                 using (new ChangeCheckScope(OnChangeUpdate))
-                                    syncSteps = EditorGUILayout.IntSlider(syncSteps, 2, unlockSyncSteps ? Math.Max(maxSyncSteps, 4) : maxSyncSteps);
+                                    syncSteps = EditorGUILayout.IntSlider(syncSteps, 2, unlockSyncSteps ? maxSyncSteps : Math.Min(maxSyncSteps, 4));
                             }
                             GUI.backgroundColor = Color.white;
                         }
@@ -316,8 +316,10 @@ namespace JeTeeS.MemoryOptimizer
                         syncSteps = maxSyncSteps;
 
                     if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
+                    {
                         if (GUILayout.Button("Uninstall"))
                             MemoryOptimizerMain.UninstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters);
+                    }
                     else
                     {
                         GUI.enabled = false;
@@ -350,8 +352,12 @@ namespace JeTeeS.MemoryOptimizer
                         GUILayout.Button("No FX Layer Selected!");
                     }
                     else
+                    {
                         if (GUILayout.Button("Install"))
+                        {
                             MemoryOptimizerMain.InstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters, boolsToOptimize, intsNFloatsToOptimize, syncSteps, stepDelay, changeCheckEnabled, wdOptionSelected, mainSavePath);
+                        }
+                    }
                 }
             }
             else if (menuNumber == 1)
@@ -424,7 +430,7 @@ namespace JeTeeS.MemoryOptimizer
         {
             paramList = new List<MemoryOptimizerMain.MemoryOptimizerListData>();
 
-            if (expressionParameters.parameters.Length > 0)
+            if (expressionParameters != null && expressionParameters.parameters.Length > 0)
             {
                 foreach (VRCExpressionParameters.Parameter param in expressionParameters.parameters)
                     paramList.Add(new MemoryOptimizerMain.MemoryOptimizerListData(param, false, false));
