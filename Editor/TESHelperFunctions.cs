@@ -11,6 +11,13 @@ namespace JeTeeS.TES.HelperFunctions
 {
     public static class TESHelperFunctions
     {
+        public static string GetFileType(UnityEngine.Object obj)
+        {
+            string fileName = GetAssetName(obj);
+            if (!string.IsNullOrEmpty(fileName))
+                return fileName.Split(".").ToList().Last();
+            return null;
+        }
         public static string GetAssetName(string path)
         {
             if (!string.IsNullOrEmpty(path))
