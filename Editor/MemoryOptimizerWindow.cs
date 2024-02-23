@@ -375,7 +375,7 @@ namespace JeTeeS.MemoryOptimizer
                 using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                 {
                     EditorGUILayout.LabelField("Backup Mode: ", EditorStyles.boldLabel);
-                    backupMode = EditorGUILayout.Popup(backupMode, backupModes, new GUIStyle(EditorStyles.popup) { fixedHeight = 18, stretchWidth = false });
+                    EditorPrefs.SetInt(backUpModeEPKey, EditorGUILayout.Popup(backupMode, backupModes, new GUIStyle(EditorStyles.popup) { fixedHeight = 18, stretchWidth = false }));
                 }
 
                 if (unlockSyncSteps)
