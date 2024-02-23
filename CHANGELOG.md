@@ -16,7 +16,7 @@
 
 ### Removed
 
-- Some debugging logs 
+- Some debugging logs
 
 
 ## [0.1.2] - 2024-2-2
@@ -71,3 +71,14 @@
 ### Added
 
 - Deselect Prefix button
+
+
+## [0.1.7] - 2024-2-19
+
+### Added
+
+- Backup feature
+
+### Changed
+
+- Sync Steps are now normally max 4, but this can be unlocked in settings
