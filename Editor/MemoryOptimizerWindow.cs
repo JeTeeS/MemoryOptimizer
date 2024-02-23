@@ -26,7 +26,7 @@ namespace JeTeeS.MemoryOptimizer
 
         private readonly string[] paramTypes = { "Int", "Float", "Bool" };
         public readonly string[] wdOptions = { "Auto-Detect", "Off", "On" };
-        public readonly string[] backupModes = { "Auto", "Off", "On" };
+        public readonly string[] backupModes = { "On", "Off", "Ask" };
 
         private int menuNumber = 0;
         private Vector2 scrollPosition;
