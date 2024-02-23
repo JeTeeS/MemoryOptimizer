@@ -162,12 +162,9 @@ namespace JeTeeS.MemoryOptimizer
                                 GUI.backgroundColor = Color.white;
                             }
                         }
-
                         GUILayout.Space(5);
                     }
-
                     GUILayout.Space(5);
-
                     if (avatarDescriptor != null && avatarFXLayer != null && expressionParameters != null)
                     {
                         longestParamName = 0;
@@ -249,41 +246,30 @@ namespace JeTeeS.MemoryOptimizer
                                     {
                                         GUI.backgroundColor = Color.red;
                                         using (new ChangeCheckScope(OnChangeUpdate))
-                                        {
                                             if (GUILayout.Button("Optimize", GUILayout.Width(203)))
                                                 paramList[i].selected = !paramList[i].selected;
-                                        }
                                     }
                                     //Param won't be optimized
                                     else if (!paramList[i].willBeOptimized)
                                     {
                                         GUI.backgroundColor = Color.yellow;
                                         using (new ChangeCheckScope(OnChangeUpdate))
-                                        {
                                             if (GUILayout.Button("Optimize", GUILayout.Width(203)))
                                                 paramList[i].selected = !paramList[i].selected;
-                                        }
                                     }
                                     //Param will be optimized
                                     else
                                     {
                                         GUI.backgroundColor = Color.green;
                                         using (new ChangeCheckScope(OnChangeUpdate))
-                                        {
                                             if (GUILayout.Button("Optimize", GUILayout.Width(203)))
                                                 paramList[i].selected = !paramList[i].selected;
-                                        }
                                     }
-
                                     GUI.enabled = true;
                                 }
-
                             }
-
                             GUI.backgroundColor = Color.white;
-
                         }
-
                         GUILayout.EndScrollView();
 
                         using (new SqueezeScope((0, 0, EditorH)))
@@ -320,11 +306,8 @@ namespace JeTeeS.MemoryOptimizer
                             {
                                 GUILayout.Label("Syncing Steps", GUILayout.MaxWidth(100));
                                 using (new ChangeCheckScope(OnChangeUpdate))
-                                {
-                                    syncSteps = EditorGUILayout.IntSlider(syncSteps, 2, maxSyncSteps);
-                                }
+                                    syncSteps = EditorGUILayout.IntSlider(syncSteps, 2, unlockSyncSteps ? Math.Max(maxSyncSteps, 4) : maxSyncSteps);
                             }
-
                             GUI.backgroundColor = Color.white;
                         }
                         GUI.enabled = true;
@@ -333,10 +316,8 @@ namespace JeTeeS.MemoryOptimizer
                         syncSteps = maxSyncSteps;
 
                     if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
-                    {
                         if (GUILayout.Button("Uninstall"))
                             MemoryOptimizerMain.UninstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters);
-                    }
                     else
                     {
                         GUI.enabled = false;
@@ -370,7 +351,7 @@ namespace JeTeeS.MemoryOptimizer
                     }
                     else
                         if (GUILayout.Button("Install"))
-                        MemoryOptimizerMain.InstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters, boolsToOptimize, intsNFloatsToOptimize, syncSteps, stepDelay, changeCheckEnabled, wdOptionSelected, mainSavePath);
+                            MemoryOptimizerMain.InstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters, boolsToOptimize, intsNFloatsToOptimize, syncSteps, stepDelay, changeCheckEnabled, wdOptionSelected, mainSavePath);
                 }
             }
             else if (menuNumber == 1)
@@ -392,7 +373,7 @@ namespace JeTeeS.MemoryOptimizer
                     if (GUILayout.Button("Unlock sync steps"))
                         EditorPrefs.SetBool(unlockSyncStepsEPKey, !unlockSyncSteps);
 
-                
+                GUI.backgroundColor = Color.white;
             }
             else 
                 menuNumber = 0;
