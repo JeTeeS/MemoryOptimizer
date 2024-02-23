@@ -11,6 +11,17 @@ namespace JeTeeS.TES.HelperFunctions
 {
     public static class TESHelperFunctions
     {
+        public static string GetAssetName(string path)
+        {
+            if (!string.IsNullOrEmpty(path))
+                return path.Split(@"\/".ToCharArray()).ToList().Last();
+            return null;
+        }
+        public static string GetAssetName(UnityEngine.Object thing)
+        {
+            string path = AssetDatabase.GetAssetPath(thing);
+            return GetAssetName(path);
+        }
         public static AnimatorController FindFXLayer(VRCAvatarDescriptor descriptor)
         {
             return (AnimatorController)descriptor.baseAnimationLayers.FirstOrDefault(x => x.type == VRCAvatarDescriptor.AnimLayerType.FX && x.animatorController != null).animatorController;
