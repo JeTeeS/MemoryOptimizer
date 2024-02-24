@@ -1,12 +1,10 @@
 # Changelog
 
-
 ## [0.1.0] - 2024-2-2
 
 ### Added
 
 - Uhh everything :)
-
 
 ## [0.1.1] - 2024-2-2
 
@@ -16,8 +14,7 @@
 
 ### Removed
 
-- Some debugging logs 
-
+- Some debugging logs
 
 ## [0.1.2] - 2024-2-2
 
@@ -25,13 +22,11 @@
 
 - No longer uses submodule
 
-
 ## [0.1.3] - 2024-2-2
 
 ### Fixed
 
 - WD detection now handles empty layers properly
-
 
 ## [0.1.4] - 2024-2-4
 
@@ -54,7 +49,6 @@
 - When changing avatars, will now update the FX layer and param list 
 - "Value Changed" state is no longer used and changes now directly transition to the right reset state
 
-
 ## [0.1.5] - 2024-2-5
 
 ### Changed
@@ -71,3 +65,13 @@
 ### Added
 
 - Deselect Prefix button
+
+## [0.1.7] - 2024-2-19
+
+### Added
+
+- Backup feature
+
+### Changed
+
+- Sync Steps are now normally max 4, but this can be unlocked in settings
