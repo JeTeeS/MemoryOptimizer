@@ -1,7 +1,7 @@
 {
   "name": "dev.jetees.memoryoptimizer",
   "displayName": "Memory Optimizer",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "unity" : "2022.3",
   "description": "A tool to help you optimize your avatar's parameters",
   "url": "https://github.com/JeTeeS/MemoryOptimizer",

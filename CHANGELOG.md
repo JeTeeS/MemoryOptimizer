@@ -90,3 +90,9 @@
 
 - Function to change which folder generated assets are saved to
 - Ability to edit step delay (not recommended)
+
+## [0.1.10] - 2024-2-25
+
+### Changed
+
+- Menu tabs now use Toolbar instead of buttons lol

@@ -30,8 +30,8 @@ namespace JeTeeS.MemoryOptimizer
         private readonly string[] paramTypes = { "Int", "Float", "Bool" };
         public readonly string[] wdOptions = { "Auto-Detect", "Off", "On" };
         public readonly string[] backupModes = { "On", "Off", "Ask" };
-
-        private int menuNumber = 0;
+        
+        private int tab = 0;
         private Vector2 scrollPosition;
         private bool runOnce;
 
@@ -66,382 +66,374 @@ namespace JeTeeS.MemoryOptimizer
             if (savePathOverride && AssetDatabase.IsValidFolder(AssetDatabase.GetAssetPath(savePathOverride))) currentSavePath = AssetDatabase.GetAssetPath(savePathOverride);
             else currentSavePath = defaultSavePath;
 
-            GUILayout.Space(5);
-            using (new SqueezeScope((0, 0, Horizontal)))
+            tab = GUILayout.Toolbar (tab, new string[] {"Install menu", "Settings menu"});
+            switch (tab) 
             {
-                if (GUILayout.Button("Install menu"))
-                    menuNumber = 0;
-                if (GUILayout.Button("Settings menu"))
-                    menuNumber = 1;
-            }
-            GUILayout.Space(5);
+                case 0:
 
-            if (menuNumber == 0)
-            {
-                using (new SqueezeScope((0, 0, Vertical, EditorStyles.helpBox)))
-                {
                     using (new SqueezeScope((0, 0, Vertical, EditorStyles.helpBox)))
                     {
-                        using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
+                        using (new SqueezeScope((0, 0, Vertical, EditorStyles.helpBox)))
                         {
-                            void OnAvatarChange()
+                            using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                             {
-                                if (avatarDescriptor)
+                                void OnAvatarChange()
                                 {
-                                    avatarFXLayer = FindFXLayer(avatarDescriptor);
-                                    expressionParameters = FindExpressionParams(avatarDescriptor);
+                                    if (avatarDescriptor)
+                                    {
+                                        avatarFXLayer = FindFXLayer(avatarDescriptor);
+                                        expressionParameters = FindExpressionParams(avatarDescriptor);
+                                    }
+                                    else
+                                    {
+                                        avatarFXLayer = null;
+                                        expressionParameters = null;
+                                    }
+
+                                    OnChangeUpdate();
+                                }
+
+                                using (new ChangeCheckScope(OnAvatarChange))
+                                {
+                                    avatarDescriptor = (VRCAvatarDescriptor)EditorGUILayout.ObjectField("Avatar", avatarDescriptor, typeof(VRCAvatarDescriptor), true);
+                                    if (avatarDescriptor == null)
+                                        if (GUILayout.Button("Auto-detect"))
+                                            FillAvatarFields(null, avatarFXLayer, expressionParameters);
+                                }
+                            }
+
+                            using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
+                            {
+                                avatarFXLayer = (AnimatorController)EditorGUILayout.ObjectField("FX Layer", avatarFXLayer, typeof(AnimatorController), true);
+                                if (avatarFXLayer == null)
+                                    if (GUILayout.Button("Auto-Detect"))
+                                        FillAvatarFields(avatarDescriptor, null, expressionParameters);
+                            }
+
+                            using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
+                            {
+                                expressionParameters = (VRCExpressionParameters)EditorGUILayout.ObjectField("Parameters", expressionParameters, typeof(VRCExpressionParameters), true);
+                                if (expressionParameters == null)
+                                    if (GUILayout.Button("Auto-Detect"))
+                                        FillAvatarFields(avatarDescriptor, avatarFXLayer, null);
+                            }
+
+                            if (!runOnce)
+                            {
+                                FillAvatarFields(null, null, null);
+                                runOnce = true;
+                            }
+
+                            GUILayout.Space(5);
+
+                            using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
+                            {
+                                EditorGUILayout.LabelField("Write Defaults: ", EditorStyles.boldLabel);
+                                wdOptionSelected = EditorGUILayout.Popup(wdOptionSelected, wdOptions, new GUIStyle(EditorStyles.popup) { fixedHeight = 18, stretchWidth = false });
+                            }
+
+                            using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
+                            {
+                                EditorGUILayout.LabelField("Change Check: ", EditorStyles.boldLabel);
+                                if (syncSteps < 3)
+                                {
+                                    changeCheckEnabled = false;
+                                    GUI.enabled = false;
+                                    GUI.backgroundColor = Color.red;
+                                    GUILayout.Button("Off", GUILayout.Width(203));
+                                    GUI.backgroundColor = Color.white;
+                                    GUI.enabled = true;
+                                }
+
+                                else if (changeCheckEnabled)
+                                {
+                                    GUI.backgroundColor = Color.green;
+                                    if (GUILayout.Button("On", GUILayout.Width(203)))
+                                        changeCheckEnabled = !changeCheckEnabled;
+
+                                    GUI.backgroundColor = Color.white;
                                 }
                                 else
                                 {
-                                    avatarFXLayer = null;
-                                    expressionParameters = null;
+                                    GUI.backgroundColor = Color.red;
+                                    if (GUILayout.Button("Off", GUILayout.Width(203)))
+                                        changeCheckEnabled = !changeCheckEnabled;
+
+                                    GUI.backgroundColor = Color.white;
+                                }
+                            }
+                            GUILayout.Space(5);
+                        }
+                        GUILayout.Space(5);
+                        if (avatarDescriptor != null && avatarFXLayer != null && expressionParameters != null)
+                        {
+                            longestParamName = 0;
+                            foreach (var x in expressionParameters.parameters)
+                                longestParamName = Math.Max(longestParamName, x.name.Count());
+
+                            using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
+                            {
+                                EditorGUILayout.LabelField("Avatar Parameters: ", EditorStyles.boldLabel);
+
+                                if (GUILayout.Button("Deselect Prefix"))
+                                {
+                                    EditorInputDialog.Show("", "Please enter your prefix to deselect", "", name =>
+                                    {
+                                        if (!string.IsNullOrEmpty(name))
+                                            foreach (MemoryOptimizerMain.MemoryOptimizerListData param in paramList.FindAll(x => x.param.name.StartsWith(name, true, null))) param.selected = false;
+                                    });
+
+                                    OnChangeUpdate();
                                 }
 
-                                OnChangeUpdate();
-                            }
-
-                            using (new ChangeCheckScope(OnAvatarChange))
-                            {
-                                avatarDescriptor = (VRCAvatarDescriptor)EditorGUILayout.ObjectField("Avatar", avatarDescriptor, typeof(VRCAvatarDescriptor), true);
-                                if (avatarDescriptor == null)
-                                    if (GUILayout.Button("Auto-detect"))
-                                        FillAvatarFields(null, avatarFXLayer, expressionParameters);
-                            }
-                        }
-
-                        using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
-                        {
-                            avatarFXLayer = (AnimatorController)EditorGUILayout.ObjectField("FX Layer", avatarFXLayer, typeof(AnimatorController), true);
-                            if (avatarFXLayer == null)
-                                if (GUILayout.Button("Auto-Detect"))
-                                    FillAvatarFields(avatarDescriptor, null, expressionParameters);
-                        }
-
-                        using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
-                        {
-                            expressionParameters = (VRCExpressionParameters)EditorGUILayout.ObjectField("Parameters", expressionParameters, typeof(VRCExpressionParameters), true);
-                            if (expressionParameters == null)
-                                if (GUILayout.Button("Auto-Detect"))
-                                    FillAvatarFields(avatarDescriptor, avatarFXLayer, null);
-                        }
-
-                        if (!runOnce)
-                        {
-                            FillAvatarFields(null, null, null);
-                            runOnce = true;
-                        }
-
-                        GUILayout.Space(5);
-
-                        using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
-                        {
-                            EditorGUILayout.LabelField("Write Defaults: ", EditorStyles.boldLabel);
-                            wdOptionSelected = EditorGUILayout.Popup(wdOptionSelected, wdOptions, new GUIStyle(EditorStyles.popup) { fixedHeight = 18, stretchWidth = false });
-                        }
-
-                        using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
-                        {
-                            EditorGUILayout.LabelField("Change Check: ", EditorStyles.boldLabel);
-                            if (syncSteps < 3)
-                            {
-                                changeCheckEnabled = false;
-                                GUI.enabled = false;
-                                GUI.backgroundColor = Color.red;
-                                GUILayout.Button("Off", GUILayout.Width(203));
-                                GUI.backgroundColor = Color.white;
-                                GUI.enabled = true;
-                            }
-
-                            else if (changeCheckEnabled)
-                            {
-                                GUI.backgroundColor = Color.green;
-                                if (GUILayout.Button("On", GUILayout.Width(203)))
-                                    changeCheckEnabled = !changeCheckEnabled;
-
-                                GUI.backgroundColor = Color.white;
-                            }
-                            else
-                            {
-                                GUI.backgroundColor = Color.red;
-                                if (GUILayout.Button("Off", GUILayout.Width(203)))
-                                    changeCheckEnabled = !changeCheckEnabled;
-
-                                GUI.backgroundColor = Color.white;
-                            }
-                        }
-                        GUILayout.Space(5);
-                    }
-                    GUILayout.Space(5);
-                    if (avatarDescriptor != null && avatarFXLayer != null && expressionParameters != null)
-                    {
-                        longestParamName = 0;
-                        foreach (var x in expressionParameters.parameters)
-                            longestParamName = Math.Max(longestParamName, x.name.Count());
-
-                        using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
-                        {
-                            EditorGUILayout.LabelField("Avatar Parameters: ", EditorStyles.boldLabel);
-
-                            if (GUILayout.Button("Deselect Prefix"))
-                            {
-                                EditorInputDialog.Show("", "Please enter your prefix to deselect", "", name =>
+                                if (GUILayout.Button("Select All"))
                                 {
-                                    if (!string.IsNullOrEmpty(name))
-                                        foreach (MemoryOptimizerMain.MemoryOptimizerListData param in paramList.FindAll(x => x.param.name.StartsWith(name, true, null))) param.selected = false;
-                                });
+                                    foreach (MemoryOptimizerMain.MemoryOptimizerListData param in paramList) param.selected = true;
+                                    OnChangeUpdate();
+                                }
 
-                                OnChangeUpdate();
-                            }
-
-                            if (GUILayout.Button("Select All"))
-                            {
-                                foreach (MemoryOptimizerMain.MemoryOptimizerListData param in paramList) param.selected = true;
-                                OnChangeUpdate();
-                            }
-
-                            if (GUILayout.Button("Clear Selected Parameters"))
-                                ResetParamSelection();
-                        }
-
-                        scrollPosition = GUILayout.BeginScrollView(scrollPosition, false, true);
-
-                        for (int i = 0; i < expressionParameters.parameters.Length; i++)
-                        {
-                            using (new SqueezeScope((0, 0, Horizontal)))
-                            {
-                                //make sure the param list is always the same size as avatar's expression parameters
-                                if (paramList == null || paramList.Count != expressionParameters.parameters.Length)
+                                if (GUILayout.Button("Clear Selected Parameters"))
                                     ResetParamSelection();
+                            }
 
+                            scrollPosition = GUILayout.BeginScrollView(scrollPosition, false, true);
+
+                            for (int i = 0; i < expressionParameters.parameters.Length; i++)
+                            {
                                 using (new SqueezeScope((0, 0, Horizontal)))
                                 {
-                                    GUI.enabled = false;
+                                    //make sure the param list is always the same size as avatar's expression parameters
+                                    if (paramList == null || paramList.Count != expressionParameters.parameters.Length)
+                                        ResetParamSelection();
 
-                                    EditorGUILayout.TextArea(expressionParameters.parameters[i].name, GUILayout.MinWidth(longestParamName * 8));
-                                    EditorGUILayout.Popup((int)expressionParameters.parameters[i].valueType, paramTypes, GUILayout.Width(50));
-                                    //EditorGUILayout.Toggle(avatarDescriptor.expressionParameters.parameters[i].networkSynced, GUILayout.MaxWidth(15));
-                                    GUI.enabled = true;
+                                    using (new SqueezeScope((0, 0, Horizontal)))
+                                    {
+                                        GUI.enabled = false;
 
-                                    //System already installed
-                                    if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
-                                    {
-                                        GUI.backgroundColor = new Color(0.1f, 0.1f, 0.1f, 1);
-                                        GUI.enabled = false;
-                                        GUILayout.Button("System Already Installed!", GUILayout.Width(203));
-                                    }
-                                    //Param isn't network synced
-                                    else if (!expressionParameters.parameters[i].networkSynced)
-                                    {
-                                        GUI.backgroundColor = new Color(0.1f, 0.1f, 0.1f, 1);
-                                        GUI.enabled = false;
-                                        GUILayout.Button("Param Not Synced", GUILayout.Width(203));
-                                    }
-                                    //Param isn't in FX layer
-                                    else if (!(avatarFXLayer.parameters.Count(x => x.name == expressionParameters.parameters[i].name) > 0))
-                                    {
-                                        paramList[i].selected = false;
-                                        GUI.backgroundColor = Color.yellow;
-                                        if (GUILayout.Button("Add To FX", GUILayout.Width(100)))
-                                            avatarFXLayer.AddUniqueParam(paramList[i].param.name);
+                                        EditorGUILayout.TextArea(expressionParameters.parameters[i].name, GUILayout.MinWidth(longestParamName * 8));
+                                        EditorGUILayout.Popup((int)expressionParameters.parameters[i].valueType, paramTypes, GUILayout.Width(50));
+                                        //EditorGUILayout.Toggle(avatarDescriptor.expressionParameters.parameters[i].networkSynced, GUILayout.MaxWidth(15));
+                                        GUI.enabled = true;
 
-                                        GUI.enabled = false;
-                                        GUI.backgroundColor = new Color(0.1f, 0.1f, 0.1f, 1);
-                                        GUILayout.Button("Param Not In FX", GUILayout.Width(100));
+                                        //System already installed
+                                        if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
+                                        {
+                                            GUI.backgroundColor = new Color(0.1f, 0.1f, 0.1f, 1);
+                                            GUI.enabled = false;
+                                            GUILayout.Button("System Already Installed!", GUILayout.Width(203));
+                                        }
+                                        //Param isn't network synced
+                                        else if (!expressionParameters.parameters[i].networkSynced)
+                                        {
+                                            GUI.backgroundColor = new Color(0.1f, 0.1f, 0.1f, 1);
+                                            GUI.enabled = false;
+                                            GUILayout.Button("Param Not Synced", GUILayout.Width(203));
+                                        }
+                                        //Param isn't in FX layer
+                                        else if (!(avatarFXLayer.parameters.Count(x => x.name == expressionParameters.parameters[i].name) > 0))
+                                        {
+                                            paramList[i].selected = false;
+                                            GUI.backgroundColor = Color.yellow;
+                                            if (GUILayout.Button("Add To FX", GUILayout.Width(100)))
+                                                avatarFXLayer.AddUniqueParam(paramList[i].param.name);
+
+                                            GUI.enabled = false;
+                                            GUI.backgroundColor = new Color(0.1f, 0.1f, 0.1f, 1);
+                                            GUILayout.Button("Param Not In FX", GUILayout.Width(100));
+                                        }
+                                        //Param isn't selected
+                                        else if (!paramList[i].selected)
+                                        {
+                                            GUI.backgroundColor = Color.red;
+                                            using (new ChangeCheckScope(OnChangeUpdate))
+                                                if (GUILayout.Button("Optimize", GUILayout.Width(203)))
+                                                    paramList[i].selected = !paramList[i].selected;
+                                        }
+                                        //Param won't be optimized
+                                        else if (!paramList[i].willBeOptimized)
+                                        {
+                                            GUI.backgroundColor = Color.yellow;
+                                            using (new ChangeCheckScope(OnChangeUpdate))
+                                                if (GUILayout.Button("Optimize", GUILayout.Width(203)))
+                                                    paramList[i].selected = !paramList[i].selected;
+                                        }
+                                        //Param will be optimized
+                                        else
+                                        {
+                                            GUI.backgroundColor = Color.green;
+                                            using (new ChangeCheckScope(OnChangeUpdate))
+                                                if (GUILayout.Button("Optimize", GUILayout.Width(203)))
+                                                    paramList[i].selected = !paramList[i].selected;
+                                        }
+                                        GUI.enabled = true;
                                     }
-                                    //Param isn't selected
-                                    else if (!paramList[i].selected)
-                                    {
-                                        GUI.backgroundColor = Color.red;
-                                        using (new ChangeCheckScope(OnChangeUpdate))
-                                            if (GUILayout.Button("Optimize", GUILayout.Width(203)))
-                                                paramList[i].selected = !paramList[i].selected;
-                                    }
-                                    //Param won't be optimized
-                                    else if (!paramList[i].willBeOptimized)
-                                    {
-                                        GUI.backgroundColor = Color.yellow;
-                                        using (new ChangeCheckScope(OnChangeUpdate))
-                                            if (GUILayout.Button("Optimize", GUILayout.Width(203)))
-                                                paramList[i].selected = !paramList[i].selected;
-                                    }
-                                    //Param will be optimized
-                                    else
-                                    {
-                                        GUI.backgroundColor = Color.green;
-                                        using (new ChangeCheckScope(OnChangeUpdate))
-                                            if (GUILayout.Button("Optimize", GUILayout.Width(203)))
-                                                paramList[i].selected = !paramList[i].selected;
-                                    }
-                                    GUI.enabled = true;
                                 }
+                                GUI.backgroundColor = Color.white;
                             }
-                            GUI.backgroundColor = Color.white;
-                        }
-                        GUILayout.EndScrollView();
+                            GUILayout.EndScrollView();
 
-                        using (new SqueezeScope((0, 0, EditorH)))
-                        {
-                            LabelWithHelpBox("Selected Bools:  " + selectedBools);
-                            LabelWithHelpBox("Selected Ints and Floats:  " + selectedIntsNFloats);
-                        }
-
-                        using (new SqueezeScope((0, 0, EditorH)))
-                        {
-                            LabelWithHelpBox("Original Param Cost:  " + (selectedBools + (selectedIntsNFloats * 8)));
-                            LabelWithHelpBox("New Param Cost:  " + newParamCost);
-                            LabelWithHelpBox("Amount You Will Save:  " + (selectedBools + (selectedIntsNFloats * 8) - newParamCost));
-                            LabelWithHelpBox("Total Sync Time:  " + syncSteps * stepDelay + "s");
-                        }
-
-                        using (new SqueezeScope((0, 0, EditorH, EditorStyles.helpBox)))
-                        {
-                            if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
+                            using (new SqueezeScope((0, 0, EditorH)))
                             {
-                                GUI.backgroundColor = Color.black;
-                                GUILayout.Label("System Already Installed!", EditorStyles.boldLabel);
-                                GUI.enabled = false;
-                                EditorGUILayout.IntSlider(syncSteps, 0, 0);
+                                LabelWithHelpBox("Selected Bools:  " + selectedBools);
+                                LabelWithHelpBox("Selected Ints and Floats:  " + selectedIntsNFloats);
                             }
-                            else if (maxSyncSteps < 2)
+
+                            using (new SqueezeScope((0, 0, EditorH)))
                             {
-                                GUI.backgroundColor = Color.red;
-                                GUILayout.Label("Too Few Parameters Selected!", EditorStyles.boldLabel);
-                                GUI.enabled = false;
-                                EditorGUILayout.IntSlider(syncSteps, 0, 0);
+                                LabelWithHelpBox("Original Param Cost:  " + (selectedBools + (selectedIntsNFloats * 8)));
+                                LabelWithHelpBox("New Param Cost:  " + newParamCost);
+                                LabelWithHelpBox("Amount You Will Save:  " + (selectedBools + (selectedIntsNFloats * 8) - newParamCost));
+                                LabelWithHelpBox("Total Sync Time:  " + syncSteps * stepDelay + "s");
                             }
-                            else
+
+                            using (new SqueezeScope((0, 0, EditorH, EditorStyles.helpBox)))
                             {
-                                GUILayout.Label("Syncing Steps", GUILayout.MaxWidth(100));
-                                using (new ChangeCheckScope(OnChangeUpdate))
-                                    syncSteps = EditorGUILayout.IntSlider(syncSteps, 2, unlockSyncSteps ? maxSyncSteps : Math.Min(maxSyncSteps, 4));
+                                if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
+                                {
+                                    GUI.backgroundColor = Color.black;
+                                    GUILayout.Label("System Already Installed!", EditorStyles.boldLabel);
+                                    GUI.enabled = false;
+                                    EditorGUILayout.IntSlider(syncSteps, 0, 0);
+                                }
+                                else if (maxSyncSteps < 2)
+                                {
+                                    GUI.backgroundColor = Color.red;
+                                    GUILayout.Label("Too Few Parameters Selected!", EditorStyles.boldLabel);
+                                    GUI.enabled = false;
+                                    EditorGUILayout.IntSlider(syncSteps, 0, 0);
+                                }
+                                else
+                                {
+                                    GUILayout.Label("Syncing Steps", GUILayout.MaxWidth(100));
+                                    using (new ChangeCheckScope(OnChangeUpdate))
+                                        syncSteps = EditorGUILayout.IntSlider(syncSteps, 2, unlockSyncSteps ? maxSyncSteps : Math.Min(maxSyncSteps, 4));
+                                }
+                                GUI.backgroundColor = Color.white;
                             }
-                            GUI.backgroundColor = Color.white;
+                            GUI.enabled = true;
                         }
-                        GUI.enabled = true;
-                    }
-                    if (syncSteps > maxSyncSteps)
-                        syncSteps = maxSyncSteps;
+                        if (syncSteps > maxSyncSteps)
+                            syncSteps = maxSyncSteps;
 
-                    if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
-                    {
-                        if (GUILayout.Button("Uninstall"))
-                            MemoryOptimizerMain.UninstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters);
-                    }
-                    else
-                    {
-                        GUI.enabled = false;
-                        GUILayout.Button("Uninstall");
-                        GUI.enabled = true;
-                    }
-
-                    if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
-                    {
-                        GUI.enabled = false;
-                        GUI.backgroundColor = Color.black;
-                        GUILayout.Button("System Already Installed! Please Uninstall Before Reinstalling.");
-                    }
-                    else if (syncSteps < 2)
-                    {
-                        GUI.enabled = false;
-                        GUI.backgroundColor = Color.red;
-                        GUILayout.Button("Select More Parameters!");
-                    }
-                    else if (!avatarDescriptor)
-                    {
-                        GUI.enabled = false;
-                        GUI.backgroundColor = Color.red;
-                        GUILayout.Button("No Avatar Selected!");
-                    }
-                    else if (!avatarFXLayer)
-                    {
-                        GUI.enabled = false;
-                        GUI.backgroundColor = Color.red;
-                        GUILayout.Button("No FX Layer Selected!");
-                    }
-                    else
-                    {
-                        if (GUILayout.Button("Install"))
+                        if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
                         {
-                            backupMode = EditorPrefs.GetInt(backUpModeEPKey);
-                            if (backupMode == 0)
-                                MakeBackupOf(new List<UnityEngine.Object> {avatarFXLayer, expressionParameters}, currentSavePath + "Backup/");
-                            else if (backupMode == 2)
-                                if (EditorUtility.DisplayDialog("", "Do you want to make a backup of your controller and parameters?", "Yes", "No"))
+                            if (GUILayout.Button("Uninstall"))
+                                MemoryOptimizerMain.UninstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters);
+                        }
+                        else
+                        {
+                            GUI.enabled = false;
+                            GUILayout.Button("Uninstall");
+                            GUI.enabled = true;
+                        }
+
+                        if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
+                        {
+                            GUI.enabled = false;
+                            GUI.backgroundColor = Color.black;
+                            GUILayout.Button("System Already Installed! Please Uninstall Before Reinstalling.");
+                        }
+                        else if (syncSteps < 2)
+                        {
+                            GUI.enabled = false;
+                            GUI.backgroundColor = Color.red;
+                            GUILayout.Button("Select More Parameters!");
+                        }
+                        else if (!avatarDescriptor)
+                        {
+                            GUI.enabled = false;
+                            GUI.backgroundColor = Color.red;
+                            GUILayout.Button("No Avatar Selected!");
+                        }
+                        else if (!avatarFXLayer)
+                        {
+                            GUI.enabled = false;
+                            GUI.backgroundColor = Color.red;
+                            GUILayout.Button("No FX Layer Selected!");
+                        }
+                        else
+                        {
+                            if (GUILayout.Button("Install"))
+                            {
+                                backupMode = EditorPrefs.GetInt(backUpModeEPKey);
+                                if (backupMode == 0)
                                     MakeBackupOf(new List<UnityEngine.Object> { avatarFXLayer, expressionParameters }, currentSavePath + "Backup/");
+                                else if (backupMode == 2)
+                                    if (EditorUtility.DisplayDialog("", "Do you want to make a backup of your controller and parameters?", "Yes", "No"))
+                                        MakeBackupOf(new List<UnityEngine.Object> { avatarFXLayer, expressionParameters }, currentSavePath + "Backup/");
 
-                            MemoryOptimizerMain.InstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters, boolsToOptimize, intsNFloatsToOptimize, syncSteps, stepDelay, changeCheckEnabled, wdOptionSelected, currentSavePath);
+                                MemoryOptimizerMain.InstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters, boolsToOptimize, intsNFloatsToOptimize, syncSteps, stepDelay, changeCheckEnabled, wdOptionSelected, currentSavePath);
+                            }
                         }
                     }
-                }
-            }
-            else if (menuNumber == 1)
-            {
-                unlockSyncSteps = EditorPrefs.GetBool(unlockSyncStepsEPKey);
-                backupMode = EditorPrefs.GetInt(backUpModeEPKey);
-                string savePathEP = PlayerPrefs.GetString(savePathPPKey);
-                if (!String.IsNullOrEmpty(savePathEP) && AssetDatabase.IsValidFolder(savePathEP))
-                    savePathOverride = (DefaultAsset)AssetDatabase.LoadAssetAtPath(savePathEP, typeof(DefaultAsset));
+                    break;
+                case 1:
 
-                //Backup Mode
-                using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
-                {
-                    EditorGUILayout.LabelField("Backup Mode: ", EditorStyles.boldLabel);
-                    EditorPrefs.SetInt(backUpModeEPKey, EditorGUILayout.Popup(backupMode, backupModes, new GUIStyle(EditorStyles.popup) { fixedHeight = 18, stretchWidth = false }));
-                }
+                    unlockSyncSteps = EditorPrefs.GetBool(unlockSyncStepsEPKey);
+                    backupMode = EditorPrefs.GetInt(backUpModeEPKey);
+                    string savePathEP = PlayerPrefs.GetString(savePathPPKey);
+                    if (!String.IsNullOrEmpty(savePathEP) && AssetDatabase.IsValidFolder(savePathEP))
+                        savePathOverride = (DefaultAsset)AssetDatabase.LoadAssetAtPath(savePathEP, typeof(DefaultAsset));
 
-                GUILayout.Space(5);
-
-                //Unlock sync steps button
-                if (unlockSyncSteps)
-                    GUI.backgroundColor = Color.green;
-                else 
-                    GUI.backgroundColor = Color.red;
-                if (GUILayout.Button("Unlock sync steps"))
-                    EditorPrefs.SetBool(unlockSyncStepsEPKey, !unlockSyncSteps);
-                GUI.backgroundColor = Color.white;
-
-                GUILayout.Space(5);
-
-                //save path
-                using (new SqueezeScope((0, 0, Vertical, EditorStyles.helpBox)))
-                {
-                    using (new SqueezeScope((0, 0, Horizontal)))
+                    //Backup Mode
+                    using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                     {
-                        using (new ChangeCheckScope(SavePathChange))
-                        {
-                            EditorGUILayout.LabelField("Select folder to save generated assets to: ");
-                            savePathOverride = (DefaultAsset)EditorGUILayout.ObjectField("", savePathOverride, typeof(DefaultAsset), false);
-                        }
-                        void SavePathChange()
-                        {
-                            PlayerPrefs.SetString(savePathPPKey, AssetDatabase.GetAssetPath(savePathOverride));
-                        }
+                        EditorGUILayout.LabelField("Backup Mode: ", EditorStyles.boldLabel);
+                        EditorPrefs.SetInt(backUpModeEPKey, EditorGUILayout.Popup(backupMode, backupModes, new GUIStyle(EditorStyles.popup) { fixedHeight = 18, stretchWidth = false }));
                     }
 
-                    if (savePathOverride && AssetDatabase.IsValidFolder(AssetDatabase.GetAssetPath(savePathOverride)))
-                        EditorGUILayout.HelpBox($"Valid folder! Now saving to: {currentSavePath}", MessageType.Info, true);
+                    GUILayout.Space(5);
+
+                    //Unlock sync steps button
+                    if (unlockSyncSteps)
+                        GUI.backgroundColor = Color.green;
                     else
-                        EditorGUILayout.HelpBox($"Not valid! Now saving to: {currentSavePath}", MessageType.Info, true);
-                }
+                        GUI.backgroundColor = Color.red;
+                    if (GUILayout.Button("Unlock sync steps"))
+                        EditorPrefs.SetBool(unlockSyncStepsEPKey, !unlockSyncSteps);
+                    GUI.backgroundColor = Color.white;
 
-                GUILayout.Space(5);
+                    GUILayout.Space(5);
 
-                //Step delay
-                using (new SqueezeScope((0, 0, Vertical, EditorStyles.helpBox)))
-                {
-                    EditorGUILayout.HelpBox($"Not recommended editing!", MessageType.Error, true);
-                    using (new SqueezeScope((0, 0, Horizontal)))
+                    //save path
+                    using (new SqueezeScope((0, 0, Vertical, EditorStyles.helpBox)))
                     {
-                        GUILayout.Label("Step delay", GUILayout.MaxWidth(100));
-                        using (new ChangeCheckScope(OnChangeUpdate))
-                            stepDelay = EditorGUILayout.FloatField(stepDelay);
+                        using (new SqueezeScope((0, 0, Horizontal)))
+                        {
+                            using (new ChangeCheckScope(SavePathChange))
+                            {
+                                EditorGUILayout.LabelField("Select folder to save generated assets to: ");
+                                savePathOverride = (DefaultAsset)EditorGUILayout.ObjectField("", savePathOverride, typeof(DefaultAsset), false);
+                            }
+                            void SavePathChange()
+                            {
+                                PlayerPrefs.SetString(savePathPPKey, AssetDatabase.GetAssetPath(savePathOverride));
+                            }
+                        }
+
+                        if (savePathOverride && AssetDatabase.IsValidFolder(AssetDatabase.GetAssetPath(savePathOverride)))
+                            EditorGUILayout.HelpBox($"Valid folder! Now saving to: {currentSavePath}", MessageType.Info, true);
+                        else
+                            EditorGUILayout.HelpBox($"Not valid! Now saving to: {currentSavePath}", MessageType.Info, true);
                     }
-                    if (GUILayout.Button("Reset value"))
-                        stepDelay = 0.2f;
-                }
+
+                    GUILayout.Space(5);
+
+                    //Step delay
+                    using (new SqueezeScope((0, 0, Vertical, EditorStyles.helpBox)))
+                    {
+                        EditorGUILayout.HelpBox($"Not recommended editing!", MessageType.Error, true);
+                        using (new SqueezeScope((0, 0, Horizontal)))
+                        {
+                            GUILayout.Label("Step delay", GUILayout.MaxWidth(100));
+                            using (new ChangeCheckScope(OnChangeUpdate))
+                                stepDelay = EditorGUILayout.FloatField(stepDelay);
+                        }
+                        if (GUILayout.Button("Reset value"))
+                            stepDelay = 0.2f;
+                    }
+                    break;
             }
-            else 
-                menuNumber = 0;
 
             GUI.backgroundColor = Color.white;
             GUI.enabled = true;
