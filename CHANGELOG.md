@@ -75,3 +75,9 @@
 ### Changed
 
 - Sync Steps are now normally max 4, but this can be unlocked in settings
+
+## [0.1.8] - 2024-2-24
+
+### Changed
+
+-Readme
