@@ -357,7 +357,7 @@ namespace JeTeeS.MemoryOptimizer
                         {
                             backupMode = EditorPrefs.GetInt(backUpModeEPKey);
                             if (backupMode == 0)
-                                MakeBackupOf(new List<UnityEngine.Object> {avatarFXLayer, expressionParameters}, mainSavePath + "Backup/");
+                                MakeBackupOf(new List<UnityEngine.Object> { avatarFXLayer, expressionParameters }, mainSavePath + "Backup/");
                             else if (backupMode == 2)
                                 if (EditorUtility.DisplayDialog("", "Do you want to make a backup of your controller and parameters?", "Yes", "No"))
                                     MakeBackupOf(new List<UnityEngine.Object> { avatarFXLayer, expressionParameters }, mainSavePath + "Backup/");
@@ -380,7 +380,7 @@ namespace JeTeeS.MemoryOptimizer
 
                 if (unlockSyncSteps)
                     GUI.backgroundColor = Color.green;
-                else 
+                else
                     GUI.backgroundColor = Color.red;
 
                 if (GUILayout.Button("Unlock sync steps"))
@@ -388,7 +388,7 @@ namespace JeTeeS.MemoryOptimizer
 
                 GUI.backgroundColor = Color.white;
             }
-            else 
+            else
                 menuNumber = 0;
 
             GUI.backgroundColor = Color.white;
@@ -421,7 +421,7 @@ namespace JeTeeS.MemoryOptimizer
 
             boolsToOptimize = boolsToOptimize.Take(selectedBools - (selectedBools % syncSteps)).ToList();
             intsNFloatsToOptimize = intsNFloatsToOptimize.Take(selectedIntsNFloats - (selectedIntsNFloats % syncSteps)).ToList();
-            
+
             foreach (MemoryOptimizerMain.MemoryOptimizerListData param in boolsToOptimize)
                 param.willBeOptimized = true;
             foreach (MemoryOptimizerMain.MemoryOptimizerListData param in intsNFloatsToOptimize)
@@ -430,7 +430,7 @@ namespace JeTeeS.MemoryOptimizer
             int syncBitCost = (syncSteps - 1).DecimalToBinary().ToString().Count();
 
             newParamCost = (boolsToOptimize.Count / syncSteps) + (intsNFloatsToOptimize.Count / syncSteps * 8) + syncBitCost + (selectedBools - boolsToOptimize.Count) + ((selectedIntsNFloats - intsNFloatsToOptimize.Count) * 8);
-            
+
         }
 
         public void ResetParamSelection()
