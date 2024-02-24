@@ -45,8 +45,8 @@ To select a parameter, simply click the "Optimize" button.
 - 🟡 If it's yellow, the paramter is selected, but will not be optimized.
 - 🟢 If it's green, the paramter will be optimized when you click "Install".
 
->[!NOTE]
->Try changing the amount of steps to get as many paramters optimized as possible!.
+> [!NOTE]
+> Try changing the amount of steps to get as many paramters optimized as possible!.
 
 ### Change Detection
 
