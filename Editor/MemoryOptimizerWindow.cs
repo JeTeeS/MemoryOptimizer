@@ -15,11 +15,14 @@ namespace JeTeeS.MemoryOptimizer
     public class MemoryOptimizerWindow : EditorWindow
     {
         private const string menuPath = "Tools/TES/MemoryOptimizer";
-        private string mainSavePath = "Assets/TES/MemoryOptimizer/";
+        private const string defaultSavePath = "Assets/TES/MemoryOptimizer/";
+        private string currentSavePath;
+        DefaultAsset savePathOverride = null;
 
-        private const string editorPrefKey = "Mem_Opt_Pref_";
-        private const string unlockSyncStepsEPKey = editorPrefKey + "unlockSyncSteps";
-        private const string backUpModeEPKey = editorPrefKey + "BackUpMode";
+        private const string prefKey = "Mem_Opt_Pref_";
+        private const string unlockSyncStepsEPKey = prefKey + "UnlockSyncSteps";
+        private const string backUpModeEPKey = prefKey + "BackUpMode";
+        private const string savePathPPKey = prefKey + "SavePath";
 
         private bool unlockSyncSteps = false;
         private int backupMode = 0;
@@ -54,11 +57,15 @@ namespace JeTeeS.MemoryOptimizer
         public static void ShowWindow()
         {
             //Show existing window instance. If one doesn't exist, make one.
-            GetWindow(typeof(MemoryOptimizerWindow), false, "Memory Optimizer", true);
+            EditorWindow window = GetWindow(typeof(MemoryOptimizerWindow), false, "Memory Optimizer", true);
+            window.minSize = new Vector2(600, 900);
         }
 
         private void OnGUI()
         {
+            if (savePathOverride && AssetDatabase.IsValidFolder(AssetDatabase.GetAssetPath(savePathOverride))) currentSavePath = AssetDatabase.GetAssetPath(savePathOverride);
+            else currentSavePath = defaultSavePath;
+
             GUILayout.Space(5);
             using (new SqueezeScope((0, 0, Horizontal)))
             {
@@ -357,12 +364,12 @@ namespace JeTeeS.MemoryOptimizer
                         {
                             backupMode = EditorPrefs.GetInt(backUpModeEPKey);
                             if (backupMode == 0)
-                                MakeBackupOf(new List<UnityEngine.Object> { avatarFXLayer, expressionParameters }, mainSavePath + "Backup/");
+                                MakeBackupOf(new List<UnityEngine.Object> {avatarFXLayer, expressionParameters}, currentSavePath + "Backup/");
                             else if (backupMode == 2)
                                 if (EditorUtility.DisplayDialog("", "Do you want to make a backup of your controller and parameters?", "Yes", "No"))
-                                    MakeBackupOf(new List<UnityEngine.Object> { avatarFXLayer, expressionParameters }, mainSavePath + "Backup/");
+                                    MakeBackupOf(new List<UnityEngine.Object> { avatarFXLayer, expressionParameters }, currentSavePath + "Backup/");
 
-                            MemoryOptimizerMain.InstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters, boolsToOptimize, intsNFloatsToOptimize, syncSteps, stepDelay, changeCheckEnabled, wdOptionSelected, mainSavePath);
+                            MemoryOptimizerMain.InstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters, boolsToOptimize, intsNFloatsToOptimize, syncSteps, stepDelay, changeCheckEnabled, wdOptionSelected, currentSavePath);
                         }
                     }
                 }
@@ -371,24 +378,69 @@ namespace JeTeeS.MemoryOptimizer
             {
                 unlockSyncSteps = EditorPrefs.GetBool(unlockSyncStepsEPKey);
                 backupMode = EditorPrefs.GetInt(backUpModeEPKey);
+                string savePathEP = PlayerPrefs.GetString(savePathPPKey);
+                if (!String.IsNullOrEmpty(savePathEP) && AssetDatabase.IsValidFolder(savePathEP))
+                    savePathOverride = (DefaultAsset)AssetDatabase.LoadAssetAtPath(savePathEP, typeof(DefaultAsset));
 
+                //Backup Mode
                 using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                 {
                     EditorGUILayout.LabelField("Backup Mode: ", EditorStyles.boldLabel);
                     EditorPrefs.SetInt(backUpModeEPKey, EditorGUILayout.Popup(backupMode, backupModes, new GUIStyle(EditorStyles.popup) { fixedHeight = 18, stretchWidth = false }));
                 }
 
+                GUILayout.Space(5);
+
+                //Unlock sync steps button
                 if (unlockSyncSteps)
                     GUI.backgroundColor = Color.green;
-                else
+                else 
                     GUI.backgroundColor = Color.red;
-
                 if (GUILayout.Button("Unlock sync steps"))
                     EditorPrefs.SetBool(unlockSyncStepsEPKey, !unlockSyncSteps);
-
                 GUI.backgroundColor = Color.white;
+
+                GUILayout.Space(5);
+
+                //save path
+                using (new SqueezeScope((0, 0, Vertical, EditorStyles.helpBox)))
+                {
+                    using (new SqueezeScope((0, 0, Horizontal)))
+                    {
+                        using (new ChangeCheckScope(SavePathChange))
+                        {
+                            EditorGUILayout.LabelField("Select folder to save generated assets to: ");
+                            savePathOverride = (DefaultAsset)EditorGUILayout.ObjectField("", savePathOverride, typeof(DefaultAsset), false);
+                        }
+                        void SavePathChange()
+                        {
+                            PlayerPrefs.SetString(savePathPPKey, AssetDatabase.GetAssetPath(savePathOverride));
+                        }
+                    }
+
+                    if (savePathOverride && AssetDatabase.IsValidFolder(AssetDatabase.GetAssetPath(savePathOverride)))
+                        EditorGUILayout.HelpBox($"Valid folder! Now saving to: {currentSavePath}", MessageType.Info, true);
+                    else
+                        EditorGUILayout.HelpBox($"Not valid! Now saving to: {currentSavePath}", MessageType.Info, true);
+                }
+
+                GUILayout.Space(5);
+
+                //Step delay
+                using (new SqueezeScope((0, 0, Vertical, EditorStyles.helpBox)))
+                {
+                    EditorGUILayout.HelpBox($"Not recommended editing!", MessageType.Error, true);
+                    using (new SqueezeScope((0, 0, Horizontal)))
+                    {
+                        GUILayout.Label("Step delay", GUILayout.MaxWidth(100));
+                        using (new ChangeCheckScope(OnChangeUpdate))
+                            stepDelay = EditorGUILayout.FloatField(stepDelay);
+                    }
+                    if (GUILayout.Button("Reset value"))
+                        stepDelay = 0.2f;
+                }
             }
-            else
+            else 
                 menuNumber = 0;
 
             GUI.backgroundColor = Color.white;
@@ -421,7 +473,7 @@ namespace JeTeeS.MemoryOptimizer
 
             boolsToOptimize = boolsToOptimize.Take(selectedBools - (selectedBools % syncSteps)).ToList();
             intsNFloatsToOptimize = intsNFloatsToOptimize.Take(selectedIntsNFloats - (selectedIntsNFloats % syncSteps)).ToList();
-
+            
             foreach (MemoryOptimizerMain.MemoryOptimizerListData param in boolsToOptimize)
                 param.willBeOptimized = true;
             foreach (MemoryOptimizerMain.MemoryOptimizerListData param in intsNFloatsToOptimize)
@@ -430,7 +482,7 @@ namespace JeTeeS.MemoryOptimizer
             int syncBitCost = (syncSteps - 1).DecimalToBinary().ToString().Count();
 
             newParamCost = (boolsToOptimize.Count / syncSteps) + (intsNFloatsToOptimize.Count / syncSteps * 8) + syncBitCost + (selectedBools - boolsToOptimize.Count) + ((selectedIntsNFloats - intsNFloatsToOptimize.Count) * 8);
-
+            
         }
 
         public void ResetParamSelection()
