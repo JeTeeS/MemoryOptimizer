@@ -84,37 +84,36 @@ namespace JeTeeS.MemoryOptimizer
             string generatedAssetsFilePath = mainFilePath + "GeneratedAssets/";
             ReadyPath(generatedAssetsFilePath);
 
-            MemoryOptimizerState optimizerState = new MemoryOptimizerState()
+            MemoryOptimizerState optimizerState = new MemoryOptimizerState
             {
                 avatar = avatarIn,
                 FXController = fxLayer,
                 expressionParameters = expressionParameters,
                 boolsToOptimize = boolsToOptimize,
                 intsNFloatsToOptimize = intsNFloatsToOptimize,
-                boolsNIntsWithCopies = new List<AnimatorControllerParameter>()
-            };
+                boolsNIntsWithCopies = new List<AnimatorControllerParameter>(),
+                /*Debug stuff
+                Debug.Log("<color=yellow>[MemoryOptimizer]</color> Optimizing Params...");
+                foreach (MemoryOptimizerListData listData in boolsToOptimize) Debug.Log("<color=yellow>[MemoryOptimizer]</color> Optimizing: " + listData.param.name + " that is the type: " + listData.param.valueType.ToString());
+                foreach (MemoryOptimizerListData listData in intsNFloatsToOptimize) Debug.Log("<color=yellow>[MemoryOptimizer]</color> Optimizing: " + listData.param.name + " that is the type: " + listData.param.valueType.ToString());
+                */
 
-            /*Debug stuff
-            Debug.Log("<color=yellow>[MemoryOptimizer]</color> Optimizing Params...");
-            foreach (MemoryOptimizerListData listData in boolsToOptimize) Debug.Log("<color=yellow>[MemoryOptimizer]</color> Optimizing: " + listData.param.name + " that is the type: " + listData.param.valueType.ToString());
-            foreach (MemoryOptimizerListData listData in intsNFloatsToOptimize) Debug.Log("<color=yellow>[MemoryOptimizer]</color> Optimizing: " + listData.param.name + " that is the type: " + listData.param.valueType.ToString());
-            */
-
-            optimizerState.syncingLayer = new AnimatorControllerLayer
-            {
-                defaultWeight = 1,
-                name = syncingLayerName,
-                stateMachine = new AnimatorStateMachine
+                syncingLayer = new AnimatorControllerLayer
                 {
-                    hideFlags = HideFlags.HideInHierarchy,
+                    defaultWeight = 1,
                     name = syncingLayerName,
-                    anyStatePosition = new Vector3(20, 20, 0),
-                    entryPosition = new Vector3(20, 50, 0)
+                    stateMachine = new AnimatorStateMachine
+                    {
+                        hideFlags = HideFlags.HideInHierarchy,
+                        name = syncingLayerName,
+                        anyStatePosition = new Vector3(20, 20, 0),
+                        entryPosition = new Vector3(20, 50, 0)
+                    }
                 }
             };
             optimizerState.syncingLayer.stateMachine.AddHiddenIdentifier(syncingLayerIdentifier);
 
-            (optimizerState.oneFrameBuffer, optimizerState.oneSecBuffer) = bufferAnims(generatedAssetsFilePath);
+            (optimizerState.oneFrameBuffer, optimizerState.oneSecBuffer) = BufferAnims(generatedAssetsFilePath);
 
             fxLayer.AddUniqueParam("IsLocal", AnimatorControllerParameterType.Bool);
 
@@ -145,7 +144,7 @@ namespace JeTeeS.MemoryOptimizer
             //add transition from local entry to 1st set value
             localEntryState.AddTransition(new AnimatorStateTransition { destinationState = optimizerState.localSetStates[0], exitTime = 0, hasExitTime = true, hasFixedDuration = true, duration = 0f, hideFlags = HideFlags.HideInHierarchy });
 
-            CreateTransitions(optimizerState, localEntryState, syncSteps, stepDelay, generateChangeCheck);
+            CreateTransitions(optimizerState, syncSteps, stepDelay, generateChangeCheck);
 
             CreateParameterDrivers(optimizerState, syncSteps, generateChangeCheck);
 
@@ -235,7 +234,7 @@ namespace JeTeeS.MemoryOptimizer
             optimizerState.intsNFloatsDifferentials = intsNFloatsDifferentials;
         }
 
-        private static void CreateTransitions(MemoryOptimizerState optimizerState, AnimatorState localEntryState, int syncSteps, float stepDelay, bool generateChangeCheck)
+        private static void CreateTransitions(MemoryOptimizerState optimizerState, int syncSteps, float stepDelay, bool generateChangeCheck)
         {
             List<MemoryOptimizerListData> boolsToOptimize = optimizerState.boolsToOptimize;
             List<MemoryOptimizerListData> intsNFloatsToOptimize = optimizerState.intsNFloatsToOptimize;
@@ -245,7 +244,6 @@ namespace JeTeeS.MemoryOptimizer
             List<AnimatorControllerParameter> boolsDifferentials = optimizerState.boolsDifferentials;
             List<AnimatorControllerParameter> intsNFloatsDifferentials = optimizerState.intsNFloatsDifferentials;
             AnimatorStateMachine remoteStateMachine = optimizerState.remoteStateMachine;
-            AnimatorStateMachine localStateMachine = optimizerState.localStateMachine;
 
             string syncStepsBinary = (syncSteps - 1).DecimalToBinary().ToString();
 
@@ -292,7 +290,7 @@ namespace JeTeeS.MemoryOptimizer
 
                 if (generateChangeCheck)
                 {
-                    void SetupLocalResetStateTransitions(string differentialName, int optimizeIndex, bool isBool)
+                    void SetupLocalResetStateTransitions(string differentialName)
                     {
                         //add transitions from value changed state to appropriate reset state
                         foreach (AnimatorState state in localSetStates)
@@ -326,13 +324,13 @@ namespace JeTeeS.MemoryOptimizer
                     for (int j = 0; j < boolsToOptimize.Count / syncSteps; j++)
                     {
                         string differentialName = boolsDifferentials[i * (boolsToOptimize.Count() / syncSteps) + j].name;
-                        SetupLocalResetStateTransitions(differentialName, j, true);
+                        SetupLocalResetStateTransitions(differentialName);
                     }
 
                     for (int j = 0; j < intsNFloatsToOptimize.Count / syncSteps; j++)
                     {
                         string differentialName = intsNFloatsDifferentials[i * (intsNFloatsToOptimize.Count() / syncSteps) + j].name;
-                        SetupLocalResetStateTransitions(differentialName, j, false);
+                        SetupLocalResetStateTransitions(differentialName);
                     }
                 }
 
@@ -377,9 +375,6 @@ namespace JeTeeS.MemoryOptimizer
 
                 remoteSettersParameterDrivers.Add(new ParamDriversAndStates());
                 remoteSettersParameterDrivers.Last().states.Add(remoteSetStates[i]);
-
-                //Make a list of transitions that go to the "wait" state
-                List<AnimatorStateTransition> toWaitTransitions = new List<AnimatorStateTransition>();
 
                 //loop through each character of the binary number
                 for (int j = 1; j <= currentIndex.Length; j++)
@@ -509,7 +504,7 @@ namespace JeTeeS.MemoryOptimizer
             optimizerState.remoteSetStates = remoteSetStates;
         }
 
-        private static (AnimationClip oneFrameBuffer, AnimationClip oneSecBuffer) bufferAnims(string generatedAssetsFilePath)
+        private static (AnimationClip oneFrameBuffer, AnimationClip oneSecBuffer) BufferAnims(string generatedAssetsFilePath)
         {
             //create and overwrite single frame buffer animation
             AnimationClip oneFrameBuffer = new AnimationClip() { name = oneFrameBufferAnimName, };

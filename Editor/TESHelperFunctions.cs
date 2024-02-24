@@ -17,7 +17,7 @@ namespace JeTeeS.TES.HelperFunctions
             foreach (UnityEngine.Object obj in things)
             {
                 int i = 0;
-                List<string> splitAssetname = GetAssetName(obj).Split(".").ToList();
+                List<string> splitAssetname = GetAssetName(obj).Split('.').ToList();
                 string assetName = "";
                 foreach (string strng in splitAssetname.Take(splitAssetname.Count - 1))
                     assetName += strng;
@@ -32,7 +32,7 @@ namespace JeTeeS.TES.HelperFunctions
         {
             string fileName = GetAssetName(obj);
             if (!string.IsNullOrEmpty(fileName))
-                return fileName.Split(".").ToList().Last();
+                return fileName.Split('.').ToList().Last();
             return null;
         }
         public static string GetAssetName(string path)
@@ -538,8 +538,8 @@ namespace JeTeeS.TES.HelperFunctions
         {
             List<AnimatorControllerLayer> mainBlendTrees = FindHiddenIdentifier(fxLayer, mainBlendTreeIdentifier);
 
-            if (mainBlendTrees.Count > 0 && mainBlendTrees[0].stateMachine.states.Length > 0 && mainBlendTrees[0].stateMachine.states[0].state.motion is BlendTree)
-                return (BlendTree)mainBlendTrees[0].stateMachine.states[0].state.motion;
+            if (mainBlendTrees.Count > 0 && mainBlendTrees[0].stateMachine.states.Length > 0 && mainBlendTrees[0].stateMachine.states[0].state.motion is BlendTree tree)
+                return tree;
 
             return null;
         }
