@@ -80,4 +80,6 @@
 
 ### Changed
 
--Readme
+- Readme
+- Code cleanup
+- Unity 2019 compatibility (can't gaurantee it works, I wont test it, but should at least compile)
