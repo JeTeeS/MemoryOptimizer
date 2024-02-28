@@ -654,6 +654,7 @@ namespace JeTeeS.MemoryOptimizer
             foreach (AnimatorControllerLayer mainBlendTreeLayer in mainBlendTreeLayers)
             {
                 //Debug.Log("<color=yellow>[MemoryOptimizer]</color> Animator layer " + mainBlendTreeLayer.name + " of index " + fxLayer.FindLayerIndex(mainBlendTreeLayer) + " is being deleted");
+                DeleteBlendTreeFromAsset((BlendTree)mainBlendTreeLayer.stateMachine.states[0].state.motion);
                 fxLayer.RemoveLayer(mainBlendTreeLayer);
             }
 
