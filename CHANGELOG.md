@@ -96,3 +96,17 @@
 ### Changed
 
 - Menu tabs now use Toolbar instead of buttons lol
+
+## [0.1.11] - 2024-2-28
+
+### Added
+
+- Uninstall now properly deletes blendtrees from controller when uninstalling
+
+### Fixed
+
+- Custom folderpath
+
+### Changed
+
+- Minor UI change in settings

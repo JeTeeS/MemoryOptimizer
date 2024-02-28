@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using UnityEditor;
 using UnityEditor.Animations;
-using UnityEngine;
 using VRC.SDK3.Avatars.Components;
 using VRC.SDK3.Avatars.ScriptableObjects;
 
@@ -414,6 +414,19 @@ namespace JeTeeS.TES.HelperFunctions
             {
                 BlendTree subBlendTree = blendTrees.Dequeue();
                 if (GetAssetPath(subBlendTree) == "") subBlendTree.SaveToAsset(saveTo);
+                foreach (ChildMotion child in subBlendTree.children)
+                    if (child.motion is BlendTree tree) blendTrees.Enqueue(tree);
+            }
+        }
+
+        public static void DeleteBlendTreeFromAsset(BlendTree blendTree)
+        {
+            Queue<BlendTree> blendTrees = new Queue<BlendTree>();
+            blendTrees.Enqueue(blendTree);
+            while (blendTrees.Count > 0)
+            {
+                BlendTree subBlendTree = blendTrees.Dequeue();
+                AssetDatabase.RemoveObjectFromAsset(subBlendTree);
                 foreach (ChildMotion child in subBlendTree.children)
                     if (child.motion is BlendTree tree) blendTrees.Enqueue(tree);
             }

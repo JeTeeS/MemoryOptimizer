@@ -81,7 +81,7 @@ namespace JeTeeS.MemoryOptimizer
 
         public static void InstallMemOpt(VRCAvatarDescriptor avatarIn, AnimatorController fxLayer, VRCExpressionParameters expressionParameters, List<MemoryOptimizerListData> boolsToOptimize, List<MemoryOptimizerListData> intsNFloatsToOptimize, int syncSteps, float stepDelay, bool generateChangeCheck, int wdOption, string mainFilePath)
         {
-            string generatedAssetsFilePath = mainFilePath + "GeneratedAssets/";
+            string generatedAssetsFilePath = mainFilePath + "/GeneratedAssets/";
             ReadyPath(generatedAssetsFilePath);
 
             MemoryOptimizerState optimizerState = new MemoryOptimizerState
@@ -654,6 +654,7 @@ namespace JeTeeS.MemoryOptimizer
             foreach (AnimatorControllerLayer mainBlendTreeLayer in mainBlendTreeLayers)
             {
                 //Debug.Log("<color=yellow>[MemoryOptimizer]</color> Animator layer " + mainBlendTreeLayer.name + " of index " + fxLayer.FindLayerIndex(mainBlendTreeLayer) + " is being deleted");
+                DeleteBlendTreeFromAsset((BlendTree)mainBlendTreeLayer.stateMachine.states[0].state.motion);
                 fxLayer.RemoveLayer(mainBlendTreeLayer);
             }
 
@@ -671,7 +672,6 @@ namespace JeTeeS.MemoryOptimizer
 
             foreach (AnimatorControllerParameter param in generatedAnimatorParams)
             {
-
                 //Debug.Log("<color=yellow>[MemoryOptimizer]</color> Controller param " + param.name + "  of type: " + param.type + " is being deleted");
                 fxLayer.RemoveParameter(param);
             }
