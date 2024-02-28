@@ -81,7 +81,7 @@ namespace JeTeeS.MemoryOptimizer
 
         public static void InstallMemOpt(VRCAvatarDescriptor avatarIn, AnimatorController fxLayer, VRCExpressionParameters expressionParameters, List<MemoryOptimizerListData> boolsToOptimize, List<MemoryOptimizerListData> intsNFloatsToOptimize, int syncSteps, float stepDelay, bool generateChangeCheck, int wdOption, string mainFilePath)
         {
-            string generatedAssetsFilePath = mainFilePath + "/GeneratedAssets";
+            string generatedAssetsFilePath = mainFilePath + "/GeneratedAssets/";
             ReadyPath(generatedAssetsFilePath);
 
             MemoryOptimizerState optimizerState = new MemoryOptimizerState
