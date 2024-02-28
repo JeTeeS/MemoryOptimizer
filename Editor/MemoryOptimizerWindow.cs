@@ -368,69 +368,71 @@ namespace JeTeeS.MemoryOptimizer
                     }
                     break;
                 case 1:
-
-                    unlockSyncSteps = EditorPrefs.GetBool(unlockSyncStepsEPKey);
-                    backupMode = EditorPrefs.GetInt(backUpModeEPKey);
-                    string savePathEP = PlayerPrefs.GetString(savePathPPKey);
-                    if (!String.IsNullOrEmpty(savePathEP) && AssetDatabase.IsValidFolder(savePathEP))
-                        savePathOverride = (DefaultAsset)AssetDatabase.LoadAssetAtPath(savePathEP, typeof(DefaultAsset));
-
-                    //Backup Mode
-                    using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
+                    using (new SqueezeScope((0,0, Vertical, EditorStyles.helpBox)))
                     {
-                        EditorGUILayout.LabelField("Backup Mode: ", EditorStyles.boldLabel);
-                        EditorPrefs.SetInt(backUpModeEPKey, EditorGUILayout.Popup(backupMode, backupModes, new GUIStyle(EditorStyles.popup) { fixedHeight = 18, stretchWidth = false }));
-                    }
+                        unlockSyncSteps = EditorPrefs.GetBool(unlockSyncStepsEPKey);
+                        backupMode = EditorPrefs.GetInt(backUpModeEPKey);
+                        string savePathEP = PlayerPrefs.GetString(savePathPPKey);
+                        if (!String.IsNullOrEmpty(savePathEP) && AssetDatabase.IsValidFolder(savePathEP))
+                            savePathOverride = (DefaultAsset)AssetDatabase.LoadAssetAtPath(savePathEP, typeof(DefaultAsset));
 
-                    GUILayout.Space(5);
-
-                    //Unlock sync steps button
-                    if (unlockSyncSteps)
-                        GUI.backgroundColor = Color.green;
-                    else
-                        GUI.backgroundColor = Color.red;
-                    if (GUILayout.Button("Unlock sync steps"))
-                        EditorPrefs.SetBool(unlockSyncStepsEPKey, !unlockSyncSteps);
-                    GUI.backgroundColor = Color.white;
-
-                    GUILayout.Space(5);
-
-                    //save path
-                    using (new SqueezeScope((0, 0, Vertical, EditorStyles.helpBox)))
-                    {
-                        using (new SqueezeScope((0, 0, Horizontal)))
+                        //Backup Mode
+                        using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                         {
-                            using (new ChangeCheckScope(SavePathChange))
-                            {
-                                EditorGUILayout.LabelField("Select folder to save generated assets to: ");
-                                savePathOverride = (DefaultAsset)EditorGUILayout.ObjectField("", savePathOverride, typeof(DefaultAsset), false);
-                            }
-                            void SavePathChange()
-                            {
-                                PlayerPrefs.SetString(savePathPPKey, AssetDatabase.GetAssetPath(savePathOverride));
-                            }
+                            EditorGUILayout.LabelField("Backup Mode: ", EditorStyles.boldLabel);
+                            EditorPrefs.SetInt(backUpModeEPKey, EditorGUILayout.Popup(backupMode, backupModes, new GUIStyle(EditorStyles.popup) { fixedHeight = 18, stretchWidth = false }));
                         }
 
-                        if (savePathOverride && AssetDatabase.IsValidFolder(AssetDatabase.GetAssetPath(savePathOverride)))
-                            EditorGUILayout.HelpBox($"Valid folder! Now saving to: {currentSavePath}", MessageType.Info, true);
+                        GUILayout.Space(5);
+
+                        //Unlock sync steps button
+                        if (unlockSyncSteps)
+                            GUI.backgroundColor = Color.green;
                         else
-                            EditorGUILayout.HelpBox($"Not valid! Now saving to: {currentSavePath}", MessageType.Info, true);
-                    }
+                            GUI.backgroundColor = Color.red;
+                        if (GUILayout.Button("Unlock sync steps"))
+                            EditorPrefs.SetBool(unlockSyncStepsEPKey, !unlockSyncSteps);
+                        GUI.backgroundColor = Color.white;
 
-                    GUILayout.Space(5);
+                        GUILayout.Space(5);
 
-                    //Step delay
-                    using (new SqueezeScope((0, 0, Vertical, EditorStyles.helpBox)))
-                    {
-                        EditorGUILayout.HelpBox($"Not recommended editing!", MessageType.Error, true);
-                        using (new SqueezeScope((0, 0, Horizontal)))
+                        //save path
+                        using (new SqueezeScope((0, 0, Vertical, EditorStyles.helpBox)))
                         {
-                            GUILayout.Label("Step delay", GUILayout.MaxWidth(100));
-                            using (new ChangeCheckScope(OnChangeUpdate))
-                                stepDelay = EditorGUILayout.FloatField(stepDelay);
+                            using (new SqueezeScope((0, 0, Horizontal)))
+                            {
+                                using (new ChangeCheckScope(SavePathChange))
+                                {
+                                    EditorGUILayout.LabelField("Select folder to save generated assets to: ");
+                                    savePathOverride = (DefaultAsset)EditorGUILayout.ObjectField("", savePathOverride, typeof(DefaultAsset), false);
+                                }
+                                void SavePathChange()
+                                {
+                                    PlayerPrefs.SetString(savePathPPKey, AssetDatabase.GetAssetPath(savePathOverride));
+                                }
+                            }
+
+                            if (savePathOverride && AssetDatabase.IsValidFolder(AssetDatabase.GetAssetPath(savePathOverride)))
+                                EditorGUILayout.HelpBox($"Valid folder! Now saving to: {currentSavePath}", MessageType.Info, true);
+                            else
+                                EditorGUILayout.HelpBox($"Not valid! Now saving to: {currentSavePath}", MessageType.Info, true);
                         }
-                        if (GUILayout.Button("Reset value"))
-                            stepDelay = 0.2f;
+
+                        GUILayout.Space(5);
+
+                        //Step delay
+                        using (new SqueezeScope((0, 0, Vertical, EditorStyles.helpBox)))
+                        {
+                            EditorGUILayout.HelpBox($"Not recommended editing!", MessageType.Error, true);
+                            using (new SqueezeScope((0, 0, Horizontal)))
+                            {
+                                GUILayout.Label("Step delay", GUILayout.MaxWidth(100));
+                                using (new ChangeCheckScope(OnChangeUpdate))
+                                    stepDelay = EditorGUILayout.FloatField(stepDelay);
+                            }
+                            if (GUILayout.Button("Reset value"))
+                                stepDelay = 0.2f;
+                        }
                     }
                     break;
             }
