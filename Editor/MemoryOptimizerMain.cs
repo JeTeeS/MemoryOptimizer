@@ -671,7 +671,6 @@ namespace JeTeeS.MemoryOptimizer
 
             foreach (AnimatorControllerParameter param in generatedAnimatorParams)
             {
-
                 //Debug.Log("<color=yellow>[MemoryOptimizer]</color> Controller param " + param.name + "  of type: " + param.type + " is being deleted");
                 fxLayer.RemoveParameter(param);
             }
