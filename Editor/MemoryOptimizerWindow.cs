@@ -15,7 +15,7 @@ namespace JeTeeS.MemoryOptimizer
     public class MemoryOptimizerWindow : EditorWindow
     {
         private const string menuPath = "Tools/TES/MemoryOptimizer";
-        private const string defaultSavePath = "Assets/TES/MemoryOptimizer/";
+        private const string defaultSavePath = "Assets/TES/MemOpt";
         private string currentSavePath;
         DefaultAsset savePathOverride = null;
 
