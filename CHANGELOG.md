@@ -110,3 +110,14 @@
 ### Changed
 
 - Minor UI change in settings
+
+## [0.1.12] - 2024-2-29
+
+### Changed
+
+- Readme
+- Param selection now resets on avatar change
+
+### Fixed
+
+- An error would sometimes show up when switching avatars
