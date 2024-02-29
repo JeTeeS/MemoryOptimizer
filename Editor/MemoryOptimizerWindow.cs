@@ -448,7 +448,7 @@ namespace JeTeeS.MemoryOptimizer
             foreach (MemoryOptimizerMain.MemoryOptimizerListData param in paramList)
             {
                 param.willBeOptimized = false;
-                if (!param.param.networkSynced || !(avatarFXLayer.parameters.Count(x => x.name == param.param.name) > 0))
+                if (avatarFXLayer && (!param.param.networkSynced || !(avatarFXLayer.parameters.Count(x => x.name == param.param.name) > 0)))
                     param.selected = false;
             }
 
