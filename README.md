@@ -65,7 +65,7 @@ Examples of parameters that are frequently updated include:
 - Continuously incrementing parameters such as RGB floats
 
 > [!NOTE]
-> This option might have a significant performance impact, if you can it is better decrease step count to improve sync latency.
+> This option might have a significant performance impact at higher parameter counts, if you can it is better decrease step count to improve sync latency.
 
 ### Sync steps
 
