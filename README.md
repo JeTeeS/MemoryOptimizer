@@ -66,7 +66,7 @@ Examples of parameters that are frequently updated include:
 
 ### Sync steps
 
-Sync steps are the amount of steps the system deivides your params into to sync them, this means a higher number will take longer to sync, but will take up less paramter space (generally, this depends on how many paramters are selected of each type). It is generally recommended to stick to 4 or less sync steps, this will usually leave you with plenty of paramter space and a reasonable sync time.
+Sync steps are the amount of steps the system deivides your params into to sync them, this means a higher number will take longer to sync, but will take up less paramter space (generally, this depends on how many paramters are selected of each type). It is generally recommended to have as few sync steps as possible, the more steps you have the longer the system will take to completely sync.
 
 > [!NOTE]
 > By default the sync steps slider is limited to 4, but this can be unlocked in the settings.
