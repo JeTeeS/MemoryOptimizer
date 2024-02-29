@@ -27,7 +27,7 @@ Make your VRChat Avatar's memory more efficient with one click
 - Click **Optimize** next to each parameter to be optimized
   - See [**How to use**](https://github.com/JeTeeS/MemoryOptimizer#parameters-selection) for what kind of parameters to select
 - Select an amount of syncing steps to generate with
-  - You can leave it at default or read more [Sync steps](https://github.com/JeTeeS/MemoryOptimizer#sync-steps)
+  - See [Sync steps](https://github.com/JeTeeS/MemoryOptimizer#sync-steps), most of the time this can be left at 2 or 3
 - Select whether to enable/disable [Change Check](https://github.com/JeTeeS/MemoryOptimizer#change-detection)
 - Click the `Install` button!
 
@@ -41,12 +41,12 @@ That being said, most things should work just fine!
 
 To select a parameter, simply click the "Optimize" button.
 
-- 🔴 If the button is red, that means the paramter is not selected.
-- 🟡 If it's yellow, the paramter is selected, but will not be optimized.
-- 🟢 If it's green, the paramter will be optimized when you click "Install".
+- 🔴 If the button is red, that means the parameter is not selected.
+- 🟡 If it's yellow, the parameter is selected, but will not be optimized.
+- 🟢 If it's green, the parameter will be optimized when you click "Install".
 
 > [!NOTE]
-> Try changing the amount of steps to get as many paramters optimized as possible!
+> Try changing the amount of steps to get as many parameters optimized as possible!
 
 ### Change Detection
 
@@ -64,9 +64,12 @@ Examples of parameters that are frequently updated include:
 - Parameters updated via OSC such as Face Tracking
 - Continuously incrementing parameters such as RGB floats
 
+> [!NOTE]
+> This option might have a significant performance impact, if you can it is better decrease step count to improve sync latency.
+
 ### Sync steps
 
-Sync steps are the amount of steps the system deivides your params into to sync them, this means a higher number will take longer to sync, but will take up less paramter space (generally, this depends on how many paramters are selected of each type). It is generally recommended to have as few sync steps as possible, the more steps you have the longer the system will take to completely sync.
+Sync steps are the amount of steps the system divides your params into to sync them, this means a higher number will take longer to sync, but will take up less parameter space (this depends on how many parameters are selected of each type). It is generally recommended to have as few sync steps as possible, the more steps you have the longer the system will take to completely sync. Try changing this number and see if you save significantly more or less space with your selected parameters! 
 
 > [!NOTE]
 > By default the sync steps slider is limited to 4, but this can be unlocked in the settings.
