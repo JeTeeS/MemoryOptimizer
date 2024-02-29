@@ -89,8 +89,7 @@ namespace JeTeeS.MemoryOptimizer
                                         avatarFXLayer = null;
                                         expressionParameters = null;
                                     }
-
-                                    OnChangeUpdate();
+                                    ResetParamSelection();
                                 }
 
                                 using (new ChangeCheckScope(OnAvatarChange))
