@@ -281,16 +281,16 @@ namespace JeTeeS.MemoryOptimizer
 
                             using (new SqueezeScope((0, 0, EditorH)))
                             {
-                                LabelWithHelpBox("Selected Bools:  " + selectedBools);
-                                LabelWithHelpBox("Selected Ints and Floats:  " + selectedIntsNFloats);
+                                LabelWithHelpBox($"Selected Bools: {selectedBools}");
+                                LabelWithHelpBox($"Selected Ints and Floats: {selectedIntsNFloats}");
                             }
 
                             using (new SqueezeScope((0, 0, EditorH)))
                             {
-                                LabelWithHelpBox("Original Param Cost:  " + (selectedBools + (selectedIntsNFloats * 8)));
-                                LabelWithHelpBox("New Param Cost:  " + newParamCost);
-                                LabelWithHelpBox("Amount You Will Save:  " + (selectedBools + (selectedIntsNFloats * 8) - newParamCost));
-                                LabelWithHelpBox("Total Sync Time:  " + syncSteps * stepDelay + "s");
+                                LabelWithHelpBox($"Original Param Cost: {expressionParameters.CalcTotalCost()}");
+                                LabelWithHelpBox($"New Param Cost: {expressionParameters.CalcTotalCost() - (selectedBools + (selectedIntsNFloats * 8) - newParamCost)}");
+                                LabelWithHelpBox($"Amount You Will Save:  {selectedBools + (selectedIntsNFloats * 8) - newParamCost}");
+                                LabelWithHelpBox($"Total Sync Time:  {syncSteps * stepDelay}s");
                             }
 
                             using (new SqueezeScope((0, 0, EditorH, EditorStyles.helpBox)))
