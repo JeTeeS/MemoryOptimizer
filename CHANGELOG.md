@@ -121,3 +121,13 @@
 ### Fixed
 
 - An error would sometimes show up when switching avatars
+
+## [0.1.13] - 2024-3-2
+
+### Changed
+
+- Now displays the total param cost instead of the selected params cost
+
+### Fixed 
+
+- Now properly checks settings without having to open the settings tab
