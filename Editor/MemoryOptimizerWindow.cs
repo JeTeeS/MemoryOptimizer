@@ -63,8 +63,16 @@ namespace JeTeeS.MemoryOptimizer
 
         private void OnGUI()
         {
-            if (savePathOverride && AssetDatabase.IsValidFolder(AssetDatabase.GetAssetPath(savePathOverride))) currentSavePath = AssetDatabase.GetAssetPath(savePathOverride);
-            else currentSavePath = defaultSavePath;
+            unlockSyncSteps = EditorPrefs.GetBool(unlockSyncStepsEPKey);
+            backupMode = EditorPrefs.GetInt(backUpModeEPKey);
+            string savePathEP = PlayerPrefs.GetString(savePathPPKey);
+            if (!String.IsNullOrEmpty(savePathEP) && AssetDatabase.IsValidFolder(savePathEP))
+                savePathOverride = (DefaultAsset)AssetDatabase.LoadAssetAtPath(savePathEP, typeof(DefaultAsset));
+
+            if (savePathOverride && AssetDatabase.IsValidFolder(AssetDatabase.GetAssetPath(savePathOverride))) 
+                currentSavePath = AssetDatabase.GetAssetPath(savePathOverride);
+            else 
+                currentSavePath = defaultSavePath;
 
             tab = GUILayout.Toolbar (tab, new string[] {"Install menu", "Settings menu"});
             switch (tab) 
@@ -369,12 +377,6 @@ namespace JeTeeS.MemoryOptimizer
                 case 1:
                     using (new SqueezeScope((0,0, Vertical, EditorStyles.helpBox)))
                     {
-                        unlockSyncSteps = EditorPrefs.GetBool(unlockSyncStepsEPKey);
-                        backupMode = EditorPrefs.GetInt(backUpModeEPKey);
-                        string savePathEP = PlayerPrefs.GetString(savePathPPKey);
-                        if (!String.IsNullOrEmpty(savePathEP) && AssetDatabase.IsValidFolder(savePathEP))
-                            savePathOverride = (DefaultAsset)AssetDatabase.LoadAssetAtPath(savePathEP, typeof(DefaultAsset));
-
                         //Backup Mode
                         using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                         {
