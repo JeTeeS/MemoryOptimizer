@@ -27,7 +27,7 @@ Make your VRChat Avatar's memory more efficient with one click
 - Click **Optimize** next to each parameter to be optimized
   - See [**How to use**](https://github.com/JeTeeS/MemoryOptimizer#parameters-selection) for what kind of parameters to select
 - Select an amount of syncing steps to generate with
-  - See [Sync steps](https://github.com/JeTeeS/MemoryOptimizer#sync-steps), most of the time this can be left at 2 or 3
+  - See [**Sync Steps**](https://github.com/JeTeeS/MemoryOptimizer#sync-steps), most of the time this can be left at 2 or 3 steps
 - Select whether to enable/disable [Change Check](https://github.com/JeTeeS/MemoryOptimizer#change-detection)
 - Click the `Install` button!
 
@@ -35,9 +35,7 @@ Make your VRChat Avatar's memory more efficient with one click
 
 ### Parameter Selection
 
-This system works by only syncing a few parameters at a time and so by the very nature of the system not all parameters can be optimized, that means some advanced systems like [15-Bits-Position-Rotation-Networking](https://github.com/VRLabs/15-Bits-Position-Rotation-Networking) can not be optimized by this system.
-
-That being said, most things should work just fine!
+This system works by only syncing a few parameters at a time, so by the very nature of the system not all parameters can be optimized. Consequently, some advanced systems like [15-Bits-Position-Rotation-Networking](https://github.com/VRLabs/15-Bits-Position-Rotation-Networking) can not be optimized by this system. That being said, most things should work just fine!
 
 To select a parameter, simply click the "Optimize" button.
 
@@ -45,7 +43,7 @@ To select a parameter, simply click the "Optimize" button.
 - 🟡 If it's yellow, the parameter is selected, but will not be optimized.
 - 🟢 If it's green, the parameter will be optimized when you click "Install".
 
- Try changing the amount of [Sync steps](https://github.com/JeTeeS/MemoryOptimizer#sync-steps) to get as many parameters optimized as possible!
+ Try changing the amount of [**Sync Steps**](https://github.com/JeTeeS/MemoryOptimizer#sync-steps) to get as many parameters optimized as possible!
 
 ### Change Detection
 
@@ -64,11 +62,13 @@ Examples of parameters that are frequently updated include:
 - Continuously incrementing parameters such as RGB floats
 
 > [!NOTE]
-> This option might have a significant performance impact at higher parameter counts, if you can it is better decrease step count to improve sync latency.
+> This option may have a significant performance impact at higher parameter counts, so it is better decrease step count to improve sync latency if possible.
 
-### Sync steps
+### Sync Steps
 
-Sync steps are the amount of steps the system divides your params into to sync them, this means a higher number will take longer to sync, but will take up less parameter space (this depends on how many parameters are selected of each type). It is generally recommended to have as few sync steps as possible, the more steps you have the longer the system will take to completely sync. Try changing this number and see if you save significantly more or less space with your selected parameters! 
+Sync steps are the amount of steps the system divides your params into to sync them. A higher number will take longer to sync, but will take up less parameter space (depending on how many parameters are selected of each type).
+
+It is generally recommended to have as few sync steps as possible, as the more steps you have the longer the system will take to completely sync. Try changing this number to see if you save significantly more or less space with your selected parameters.
 
 > [!NOTE]
-> By default the sync steps slider is limited to 4, but this can be unlocked in the settings.
+> By default the sync steps slider is limited to 4 steps, but this can be unlocked in the settings.
