@@ -39,16 +39,18 @@ namespace JeTeeS.MemoryOptimizer
         private AnimatorController avatarFXLayer;
         private VRCExpressionParameters expressionParameters;
 
+        private List<MemoryOptimizerMain.MemoryOptimizerListData> selectedBools = new List<MemoryOptimizerMain.MemoryOptimizerListData>();
         private List<MemoryOptimizerMain.MemoryOptimizerListData> boolsToOptimize = new List<MemoryOptimizerMain.MemoryOptimizerListData>();
-        private int selectedBools;
+        private List<MemoryOptimizerMain.MemoryOptimizerListData> selectedIntsNFloats = new List<MemoryOptimizerMain.MemoryOptimizerListData>();
         private List<MemoryOptimizerMain.MemoryOptimizerListData> intsNFloatsToOptimize = new List<MemoryOptimizerMain.MemoryOptimizerListData>();
-        private int selectedIntsNFloats;
         private List<MemoryOptimizerMain.MemoryOptimizerListData> paramList;
-
+        private int installationIndexers;
+        private int installationBoolSyncers;
+        private int installationIntSyncers;
+        private int newParamCost;
         private int maxSyncSteps = 1;
         private int syncSteps = 1;
         private float stepDelay = 0.2f;
-        private int newParamCost;
         private int longestParamName;
         private int wdOptionSelected = 0;
         private bool changeCheckEnabled = false;
@@ -281,15 +283,15 @@ namespace JeTeeS.MemoryOptimizer
 
                             using (new SqueezeScope((0, 0, EditorH)))
                             {
-                                LabelWithHelpBox($"Selected Bools: {selectedBools}");
-                                LabelWithHelpBox($"Selected Ints and Floats: {selectedIntsNFloats}");
+                                LabelWithHelpBox($"Selected Bools: {selectedBools.Count}");
+                                LabelWithHelpBox($"Selected Ints and Floats: {selectedIntsNFloats.Count}");
                             }
 
                             using (new SqueezeScope((0, 0, EditorH)))
                             {
                                 LabelWithHelpBox($"Original Param Cost: {expressionParameters.CalcTotalCost()}");
-                                LabelWithHelpBox($"New Param Cost: {expressionParameters.CalcTotalCost() - (selectedBools + (selectedIntsNFloats * 8) - newParamCost)}");
-                                LabelWithHelpBox($"Amount You Will Save:  {selectedBools + (selectedIntsNFloats * 8) - newParamCost}");
+                                LabelWithHelpBox($"New Param Cost: {newParamCost}");
+                                LabelWithHelpBox($"Amount You Will Save:  {expressionParameters.CalcTotalCost() - newParamCost}");
                                 LabelWithHelpBox($"Total Sync Time:  {syncSteps * stepDelay}s");
                             }
 
@@ -453,31 +455,44 @@ namespace JeTeeS.MemoryOptimizer
                     param.selected = false;
             }
 
-            boolsToOptimize = paramList.FindAll(x => x.selected && x.param.valueType == VRCExpressionParameters.ValueType.Bool);
-            selectedBools = boolsToOptimize.Count();
-            intsNFloatsToOptimize = paramList.FindAll(x => x.selected && (x.param.valueType == VRCExpressionParameters.ValueType.Int || x.param.valueType == VRCExpressionParameters.ValueType.Float));
-            selectedIntsNFloats = intsNFloatsToOptimize.Count();
+            selectedBools = new List<MemoryOptimizerMain.MemoryOptimizerListData>();
+            selectedIntsNFloats = new List<MemoryOptimizerMain.MemoryOptimizerListData>();
+            foreach(var param in paramList)
+            {
+                if(param.selected)
+                    {
+                        if(param.param.valueType == VRCExpressionParameters.ValueType.Bool)
+                            selectedBools.Add(param);
+                        else
+                            selectedIntsNFloats.Add(param);
+                    }
+            }
 
-            newParamCost = selectedBools + (selectedIntsNFloats * 8);
-
-            maxSyncSteps = Math.Max(Math.Max(selectedBools, selectedIntsNFloats), 1);
+            maxSyncSteps = Math.Max(Math.Max(selectedBools.Count(), selectedIntsNFloats.Count()), 1);
             if (maxSyncSteps == 1)
+            {
+                installationIndexers = 0;
+                installationBoolSyncers = 0;
+                installationIntSyncers = 0;
+                newParamCost = expressionParameters.CalcTotalCost();
                 return;
+            }
             if (syncSteps < 2)
                 syncSteps = 2;
 
-            boolsToOptimize = boolsToOptimize.Take(selectedBools - (selectedBools % syncSteps)).ToList();
-            intsNFloatsToOptimize = intsNFloatsToOptimize.Take(selectedIntsNFloats - (selectedIntsNFloats % syncSteps)).ToList();
+            boolsToOptimize = selectedBools.Take(selectedBools.Count - (selectedBools.Count % syncSteps)).ToList();
+            intsNFloatsToOptimize = selectedIntsNFloats.Take(selectedIntsNFloats.Count - (selectedIntsNFloats.Count % syncSteps)).ToList();
             
             foreach (MemoryOptimizerMain.MemoryOptimizerListData param in boolsToOptimize)
                 param.willBeOptimized = true;
             foreach (MemoryOptimizerMain.MemoryOptimizerListData param in intsNFloatsToOptimize)
                 param.willBeOptimized = true;
+           
+            installationIndexers = (syncSteps - 1).DecimalToBinary().ToString().Count();
+            installationBoolSyncers = boolsToOptimize.Count / syncSteps;
+            installationIntSyncers = intsNFloatsToOptimize.Count / syncSteps; 
 
-            int syncBitCost = (syncSteps - 1).DecimalToBinary().ToString().Count();
-
-            newParamCost = (boolsToOptimize.Count / syncSteps) + (intsNFloatsToOptimize.Count / syncSteps * 8) + syncBitCost + (selectedBools - boolsToOptimize.Count) + ((selectedIntsNFloats - intsNFloatsToOptimize.Count) * 8);
-            
+            newParamCost = expressionParameters.CalcTotalCost() + installationIndexers + installationBoolSyncers + (installationIntSyncers * 8) - (boolsToOptimize.Count + (intsNFloatsToOptimize.Count * 8));
         }
 
         public void ResetParamSelection()
