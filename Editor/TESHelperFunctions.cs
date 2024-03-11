@@ -11,6 +11,10 @@ namespace JeTeeS.TES.HelperFunctions
 {
     public static class TESHelperFunctions
     {
+        public static string SanitizeFileName(this string fileName)
+        {
+            return String.Join("_", fileName.Split(System.IO.Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries));
+        }
         public static void MakeBackupOf(List<UnityEngine.Object> things, string saveTo)
         {
             ReadyPath(saveTo);
