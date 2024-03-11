@@ -294,7 +294,16 @@ namespace JeTeeS.MemoryOptimizer
                                 LabelWithHelpBox($"Amount You Will Save:  {expressionParameters.CalcTotalCost() - newParamCost}");
                                 LabelWithHelpBox($"Total Sync Time:  {syncSteps * stepDelay}s");
                             }
-
+                            /*
+                            using (new SqueezeScope((0, 0, EditorH)))
+                            {
+                                LabelWithHelpBox($"Bools to be optimized: {boolsToOptimize.Count}");
+                                LabelWithHelpBox($"Ints and Floats to be optimized: {intsNFloatsToOptimize.Count}");
+                                LabelWithHelpBox($"Indexers: {installationIndexers}");
+                                LabelWithHelpBox($"Bool Syncers: {installationBoolSyncers}");
+                                LabelWithHelpBox($"Int Syncers: {installationIntSyncers}");
+                            }
+                            */
                             using (new SqueezeScope((0, 0, EditorH, EditorStyles.helpBox)))
                             {
                                 if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
