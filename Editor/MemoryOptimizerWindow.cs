@@ -369,6 +369,12 @@ namespace JeTeeS.MemoryOptimizer
                             GUI.backgroundColor = Color.red;
                             GUILayout.Button("No FX Layer Selected!");
                         }
+                        else if (expressionParameters.parameters.Length + (installationBoolSyncers + installationIntSyncers + installationIndexers) > 255)
+                        {
+                            GUI.enabled = false;
+                            GUI.backgroundColor = Color.red;
+                            GUILayout.Button("Generated params will exceed 256!");
+                        }
                         else
                         {
                             if (GUILayout.Button("Install"))
