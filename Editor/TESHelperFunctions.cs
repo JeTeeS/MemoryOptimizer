@@ -330,7 +330,7 @@ namespace JeTeeS.TES.HelperFunctions
                 Debug.LogError("param list is empty!");
             if (assetName == "")
                 assetName = paramNames[0] + "_AAP " + value;
-            string saveName = assetName.Replace('/', '_');
+            string saveName = assetName.Replace('/', '_').SanitizeFileName();
             AnimationClip animClip = (AnimationClip)AssetDatabase.LoadAssetAtPath(saveAssetsTo + saveName + ".anim", typeof(AnimationClip));
             if (animClip != null)
                 return animClip;
