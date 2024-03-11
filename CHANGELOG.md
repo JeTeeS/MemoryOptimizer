@@ -131,3 +131,13 @@
 ### Fixed 
 
 - Now properly checks settings without having to open the settings tab
+
+## [0.1.14] - 2024-3-11
+
+### Changed 
+
+- Calculation of param cost before generating 
+
+### Added
+
+- Check if param amount will exceed 255 when generating
