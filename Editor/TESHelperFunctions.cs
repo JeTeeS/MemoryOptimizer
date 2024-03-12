@@ -11,6 +11,10 @@ namespace JeTeeS.TES.HelperFunctions
 {
     public static class TESHelperFunctions
     {
+        public static string SanitizeFileName(this string fileName)
+        {
+            return String.Join("_", fileName.Split(System.IO.Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries));
+        }
         public static void MakeBackupOf(List<UnityEngine.Object> things, string saveTo)
         {
             ReadyPath(saveTo);
@@ -326,7 +330,7 @@ namespace JeTeeS.TES.HelperFunctions
                 Debug.LogError("param list is empty!");
             if (assetName == "")
                 assetName = paramNames[0] + "_AAP " + value;
-            string saveName = assetName.Replace('/', '_');
+            string saveName = assetName.Replace('/', '_').SanitizeFileName();
             AnimationClip animClip = (AnimationClip)AssetDatabase.LoadAssetAtPath(saveAssetsTo + saveName + ".anim", typeof(AnimationClip));
             if (animClip != null)
                 return animClip;
