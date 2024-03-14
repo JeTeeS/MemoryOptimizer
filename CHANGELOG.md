@@ -141,3 +141,13 @@
 ### Added
 
 - Check if param amount will exceed 255 when generating
+
+## [0.1.15] - 2024-3-14
+
+### Changed
+
+- An error during uninstall no longer blocks you from uninstalling but instead prompts you to visit the discord.
+
+### Fixed
+
+- Deselect prefix now properly updates the UI
