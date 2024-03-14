@@ -50,6 +50,23 @@ namespace JeTeeS.TES.HelperFunctions
             string path = AssetDatabase.GetAssetPath(thing);
             return GetAssetName(path);
         }
+        public static int UninstallErrorDialogWithDiscordLink(string title, string mainMessage, string discordLink)
+        {
+            int option = EditorUtility.DisplayDialogComplex(title, mainMessage, "Continue uninstall anyways (not recommended)", "Cancel uninstall", "Join the discord");
+                switch (option)
+                {
+                    case 0:
+                        return 0;
+                    case 1:
+                        return 1;
+                    case 2:
+                        Application.OpenURL(discordLink);
+                        return 2;
+                    default:
+                        Debug.LogError("Unrecognized option.");
+                        return -1;
+                }
+        }
         public static AnimatorController FindFXLayer(VRCAvatarDescriptor descriptor)
         {
             return (AnimatorController)descriptor.baseAnimationLayers.FirstOrDefault(x => x.type == VRCAvatarDescriptor.AnimLayerType.FX && x.animatorController != null).animatorController;
