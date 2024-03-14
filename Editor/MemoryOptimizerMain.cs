@@ -610,7 +610,7 @@ namespace JeTeeS.MemoryOptimizer
             if (mainBlendTreeLayers.Count > 1)
                 if (UninstallErrorDialogWithDiscordLink(
                         $"Too many MemOptBlendtrees found",
-                        $"Too many MemOptBlendtrees found! {mainBlendTreeLayers.Count} found. Please join the discord for support.",
+                        $"Too many MemOptBlendtrees found! {mainBlendTreeLayers.Count} found. \nPlease join the discord for support. \nKeep in mind there are backups made by default by the script!",
                         discordLink) != 0
                     )
                     return;
@@ -620,7 +620,7 @@ namespace JeTeeS.MemoryOptimizer
                 string s = (mainBlendTreeLayers.Count > 1) ? "many" : "few";
                 if (UninstallErrorDialogWithDiscordLink(
                         $"Too {s} syncing layers found",
-                        $"Too {s} syncing layers found! Only {syncingLayers.Count} found. Please join the discord for support.",
+                        $"Too {s} syncing layers found! {syncingLayers.Count} found. \nPlease join the discord for support. \nKeep in mind there are backups made by default by the script!",
                         discordLink) != 0
                     )
                     return;
@@ -646,7 +646,7 @@ namespace JeTeeS.MemoryOptimizer
             if (generatedExpressionParams.Count <= 0)
                 if (UninstallErrorDialogWithDiscordLink(
                         "Too few generated expressions found",
-                        $"Too few generated expressions found! Only {generatedExpressionParams.Count} found. Please join the discord for support.",
+                        $"Too few generated expressions found! {generatedExpressionParams.Count} found. \nPlease join the discord for support. \nKeep in mind there are backups made by default by the script!",
                         discordLink) != 0
                     )
                     return;
@@ -654,7 +654,7 @@ namespace JeTeeS.MemoryOptimizer
             if (generatedAnimatorParams.Count <= 0)
                 if (UninstallErrorDialogWithDiscordLink(
                         "Too few generated animator parameters found!",
-                        $"Too few generated animator parameters found! Only {generatedAnimatorParams.Count} found. Please join the discord for support.",
+                        $"Too few generated animator parameters found! {generatedAnimatorParams.Count} found. \nPlease join the discord for support. \nKeep in mind there are backups made by default by the script!",
                         discordLink) != 0
                     )
                     return;
@@ -662,7 +662,7 @@ namespace JeTeeS.MemoryOptimizer
             if (optimizedParams.Count < 2)
                 if (UninstallErrorDialogWithDiscordLink(
                         "Too few optimized parameters found!",
-                        $"Too few generated animator parameters found! Only {optimizedParams.Count} found. Please join the discord for support.",
+                        $"Too few generated animator parameters found! {optimizedParams.Count} found. \nPlease join the discord for support. \nKeep in mind there are backups made by default by the script!",
                         discordLink) != 0
                     )
                     return;
