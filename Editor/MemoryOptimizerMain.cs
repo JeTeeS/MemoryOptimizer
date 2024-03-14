@@ -34,6 +34,7 @@ namespace JeTeeS.MemoryOptimizer
             public List<AnimatorState> states = new List<AnimatorState>();
         }
 
+        private const string discordLink = "https://discord.gg/N7snuJhzkd";
         private const string prefix = "MemOpt_";
         private const string syncingLayerName = prefix + "Syncing Layer";
         private const string syncingLayerIdentifier = prefix + "Syncer";
@@ -607,49 +608,64 @@ namespace JeTeeS.MemoryOptimizer
             List<AnimatorControllerLayer> syncingLayers = fxLayer.FindHiddenIdentifier(syncingLayerIdentifier);
 
             if (mainBlendTreeLayers.Count > 1)
-            {
-                Debug.LogError("<color=yellow>[MemoryOptimizer]</color> Too many memory optimizer blendtrees found, unable to uninstall automatically!");
-                return;
-            }
+                if (UninstallErrorDialogWithDiscordLink(
+                        $"Too many MemOptBlendtrees found",
+                        $"Too many MemOptBlendtrees found! {mainBlendTreeLayers.Count} found. Please join the discord for support.",
+                        discordLink) != 0
+                    )
+                    return;
 
             if (syncingLayers.Count != 1)
             {
-                Debug.LogError("<color=yellow>[MemoryOptimizer]</color> " + syncingLayers.Count + " syncing layers found, unable to uninstall automatically");
-                return;
+                string s = (mainBlendTreeLayers.Count > 1) ? "many" : "few";
+                if (UninstallErrorDialogWithDiscordLink(
+                        $"Too {s} syncing layers found",
+                        $"Too {s} syncing layers found! Only {syncingLayers.Count} found. Please join the discord for support.",
+                        discordLink) != 0
+                    )
+                    return;
             }
-
-            List<ChildAnimatorState> states = syncingLayers[0].FindAllStatesInLayer();
-            List<ChildAnimatorState> setStates = states.Where(x => x.state.name.Contains("Set Value ")).ToList();
-            foreach (ChildAnimatorState state in setStates)
+            else
             {
-                VRCAvatarParameterDriver paramdriver = (VRCAvatarParameterDriver)state.state.behaviours[0];
-                List<VRC_AvatarParameterDriver.Parameter> paramdriverParams = paramdriver.parameters;
-                foreach (VRC_AvatarParameterDriver.Parameter param in paramdriverParams)
-                    if (!String.IsNullOrEmpty(param.source))
-                        foreach (VRCExpressionParameters.Parameter item in expressionParameters.parameters.Where(x => x.name == param.source))
-                            optimizedParams.Add(item);
+                List<ChildAnimatorState> states = syncingLayers[0].FindAllStatesInLayer();
+                List<ChildAnimatorState> setStates = states.Where(x => x.state.name.Contains("Set Value ")).ToList();
+                foreach (ChildAnimatorState state in setStates)
+                {
+                    VRCAvatarParameterDriver paramdriver = (VRCAvatarParameterDriver)state.state.behaviours[0];
+                    List<VRC_AvatarParameterDriver.Parameter> paramdriverParams = paramdriver.parameters;
+                    foreach (VRC_AvatarParameterDriver.Parameter param in paramdriverParams)
+                        if (!String.IsNullOrEmpty(param.source))
+                            foreach (VRCExpressionParameters.Parameter item in expressionParameters.parameters.Where(x => x.name == param.source))
+                                optimizedParams.Add(item);
+                }
             }
 
             foreach (VRCExpressionParameters.Parameter item in expressionParameters.parameters.Where(x => x.name.Contains(prefix)))
                 generatedExpressionParams.Add(item);
 
             if (generatedExpressionParams.Count <= 0)
-            {
-                Debug.LogError("<color=yellow>[MemoryOptimizer]</color> Too few generated expression parameters found! Only " + generatedExpressionParams.Count + " found. Aborting uninstall...");
-                return;
-            }
+                if (UninstallErrorDialogWithDiscordLink(
+                        "Too few generated expressions found",
+                        $"Too few generated expressions found! Only {generatedExpressionParams.Count} found. Please join the discord for support.",
+                        discordLink) != 0
+                    )
+                    return;
 
             if (generatedAnimatorParams.Count <= 0)
-            {
-                Debug.LogError("<color=yellow>[MemoryOptimizer]</color> Too few generated animator parameters found! Only " + generatedAnimatorParams.Count + " found. Aborting uninstall...");
-                return;
-            }
+                if (UninstallErrorDialogWithDiscordLink(
+                        "Too few generated animator parameters found!",
+                        $"Too few generated animator parameters found! Only {generatedAnimatorParams.Count} found. Please join the discord for support.",
+                        discordLink) != 0
+                    )
+                    return;
 
             if (optimizedParams.Count < 2)
-            {
-                Debug.LogError("<color=yellow>[MemoryOptimizer]</color> Too few optimized parameters found! Only " + optimizedParams.Count + " found. Aborting uninstall...");
-                return;
-            }
+                if (UninstallErrorDialogWithDiscordLink(
+                        "Too few optimized parameters found!",
+                        $"Too few generated animator parameters found! Only {optimizedParams.Count} found. Please join the discord for support.",
+                        discordLink) != 0
+                    )
+                    return;
 
             foreach (AnimatorControllerLayer mainBlendTreeLayer in mainBlendTreeLayers)
             {
