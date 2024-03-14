@@ -190,9 +190,8 @@ namespace JeTeeS.MemoryOptimizer
                                     {
                                         if (!string.IsNullOrEmpty(name))
                                             foreach (MemoryOptimizerMain.MemoryOptimizerListData param in paramList.FindAll(x => x.param.name.StartsWith(name, true, null))) param.selected = false;
+                                        OnChangeUpdate();
                                     });
-
-                                    OnChangeUpdate();
                                 }
 
                                 if (GUILayout.Button("Select All"))
