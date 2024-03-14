@@ -224,7 +224,7 @@ namespace JeTeeS.MemoryOptimizer
                                         GUI.enabled = true;
 
                                         //System already installed
-                                        if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
+                                        if (MemoryOptimizerMain.IsSystemInstalled(avatarFXLayer))
                                         {
                                             GUI.backgroundColor = new Color(0.1f, 0.1f, 0.1f, 1);
                                             GUI.enabled = false;
@@ -305,7 +305,7 @@ namespace JeTeeS.MemoryOptimizer
                             */
                             using (new SqueezeScope((0, 0, EditorH, EditorStyles.helpBox)))
                             {
-                                if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
+                                if (MemoryOptimizerMain.IsSystemInstalled(avatarFXLayer))
                                 {
                                     GUI.backgroundColor = Color.black;
                                     GUILayout.Label("System Already Installed!", EditorStyles.boldLabel);
@@ -332,7 +332,7 @@ namespace JeTeeS.MemoryOptimizer
                         if (syncSteps > maxSyncSteps)
                             syncSteps = maxSyncSteps;
 
-                        if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
+                        if (MemoryOptimizerMain.IsSystemInstalled(avatarFXLayer))
                         {
                             if (GUILayout.Button("Uninstall"))
                                 MemoryOptimizerMain.UninstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters);
@@ -344,7 +344,7 @@ namespace JeTeeS.MemoryOptimizer
                             GUI.enabled = true;
                         }
 
-                        if (MemoryOptimizerMain.FindInstallation(avatarFXLayer))
+                        if (MemoryOptimizerMain.IsSystemInstalled(avatarFXLayer))
                         {
                             GUI.enabled = false;
                             GUI.backgroundColor = Color.black;

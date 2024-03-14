@@ -67,7 +67,7 @@ namespace JeTeeS.MemoryOptimizer
             public AnimatorControllerLayer syncingLayer;
         }
 
-        public static bool FindInstallation(AnimatorController controller)
+        public static bool IsSystemInstalled(AnimatorController controller)
         {
             if (controller == null)
                 return false;
