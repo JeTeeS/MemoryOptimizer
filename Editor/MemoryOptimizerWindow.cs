@@ -488,7 +488,7 @@ namespace JeTeeS.MemoryOptimizer
                 installationIndexers = 0;
                 installationBoolSyncers = 0;
                 installationIntSyncers = 0;
-                newParamCost = expressionParameters.CalcTotalCost();
+                newParamCost = expressionParameters == null ? 0 : expressionParameters.CalcTotalCost();
                 return;
             }
             if (syncSteps < 2)
