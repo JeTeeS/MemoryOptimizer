@@ -151,3 +151,9 @@
 ### Fixed
 
 - Deselect prefix now properly updates the UI
+
+## [0.1.16] - 2024-3-17
+
+### Fixed
+
+- Missing null check in the OnChangeUpdate that caused error spam when there was no expression parameters
