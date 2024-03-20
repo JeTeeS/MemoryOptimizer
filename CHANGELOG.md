@@ -157,3 +157,7 @@
 ### Fixed
 
 - Missing null check in the OnChangeUpdate that caused error spam when there was no expression parameters
+
+### Changed 
+
+- Readme
