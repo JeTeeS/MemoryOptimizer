@@ -5,6 +5,8 @@
 [![Generic badge](https://img.shields.io/github/downloads/JeTeeS/MemoryOptimizer/total?label=Downloads)](https://github.com/JeTeeS/MemoryOptimizer/releases/latest)
 [![Generic badge](https://img.shields.io/badge/Unity-2022.3.6f1-lightblue.svg)](https://unity3d.com/unity/whats-new/2022.3.6)
 [![Generic badge](https://img.shields.io/badge/SDK-AvatarSDK3-lightblue.svg)](https://vrchat.com/home/download)
+[![Discord](https://img.shields.io/discord/875595847688155136)](https://discord.gg/N7snuJhzkd)
+
 
 Make your VRChat Avatar's memory more efficient with one click
 
