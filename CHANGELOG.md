@@ -162,9 +162,9 @@
 
 - Readme
 
-## [0.1.16] - 2024-3-17
+## [0.1.17] - 2024-3-22
 
 ### Changed
 
 - Name of Change Check to Change Detection
-- readme
+- Readme
