@@ -25,7 +25,7 @@ This does have some limitations, as the syncing time will be delayed compared to
 
 ## Install guide
 
-- Add [MemoryOptimizer](https://vpm.jetees.dev) to the VRChat Creator Companion (VCC)
+- Add [**MemoryOptimizer**](https://vpm.jetees.dev) to the VRChat Creator Companion (VCC)
   - For a guide on how to add it to VCC, [see this guide](https://notes.sleightly.dev/community-repos/)
 - Add MemoryOptimizer to the Unity Project using the "Manage Project" option in VCC
 - Select `Tools > TES > MemoryOptimizer` from the top toolbar to open the MemoryOptimizer window
@@ -50,7 +50,7 @@ To select a parameter, simply click the `Optimize` button.
 - 🟡 If it's yellow, the parameter is selected, but will not be optimized.
 - 🟢 If it's green, the parameter will be optimized when you click `Install`.
 
-You can also use the `Select all` and `Deselect Prefix` buttons to quickly select the parameters you need.
+You can also use the `Select All` and `Deselect Prefix` buttons to quickly select the parameters you need.
 
 Try changing the amount of [**Sync Steps**](https://github.com/JeTeeS/MemoryOptimizer#sync-steps) to get as many parameters optimized as possible!
 
