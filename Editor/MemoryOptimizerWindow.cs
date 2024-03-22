@@ -53,7 +53,7 @@ namespace JeTeeS.MemoryOptimizer
         private float stepDelay = 0.2f;
         private int longestParamName;
         private int wdOptionSelected = 0;
-        private bool changeCheckEnabled = false;
+        private bool changeDetectionEnabled = false;
 
         [MenuItem(menuPath)]
         public static void ShowWindow()
@@ -143,10 +143,10 @@ namespace JeTeeS.MemoryOptimizer
 
                             using (new SqueezeScope((0, 0, Horizontal, EditorStyles.helpBox)))
                             {
-                                EditorGUILayout.LabelField("Change Check: ", EditorStyles.boldLabel);
+                                EditorGUILayout.LabelField("Change Detection: ", EditorStyles.boldLabel);
                                 if (syncSteps < 3)
                                 {
-                                    changeCheckEnabled = false;
+                                    changeDetectionEnabled = false;
                                     GUI.enabled = false;
                                     GUI.backgroundColor = Color.red;
                                     GUILayout.Button("Off", GUILayout.Width(203));
@@ -154,11 +154,11 @@ namespace JeTeeS.MemoryOptimizer
                                     GUI.enabled = true;
                                 }
 
-                                else if (changeCheckEnabled)
+                                else if (changeDetectionEnabled)
                                 {
                                     GUI.backgroundColor = Color.green;
                                     if (GUILayout.Button("On", GUILayout.Width(203)))
-                                        changeCheckEnabled = !changeCheckEnabled;
+                                        changeDetectionEnabled = !changeDetectionEnabled;
 
                                     GUI.backgroundColor = Color.white;
                                 }
@@ -166,7 +166,7 @@ namespace JeTeeS.MemoryOptimizer
                                 {
                                     GUI.backgroundColor = Color.red;
                                     if (GUILayout.Button("Off", GUILayout.Width(203)))
-                                        changeCheckEnabled = !changeCheckEnabled;
+                                        changeDetectionEnabled = !changeDetectionEnabled;
 
                                     GUI.backgroundColor = Color.white;
                                 }
@@ -385,7 +385,7 @@ namespace JeTeeS.MemoryOptimizer
                                     if (EditorUtility.DisplayDialog("", "Do you want to make a backup of your controller and parameters?", "Yes", "No"))
                                         MakeBackupOf(new List<UnityEngine.Object> { avatarFXLayer, expressionParameters }, currentSavePath + "/Backup/");
 
-                                MemoryOptimizerMain.InstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters, boolsToOptimize, intsNFloatsToOptimize, syncSteps, stepDelay, changeCheckEnabled, wdOptionSelected, currentSavePath);
+                                MemoryOptimizerMain.InstallMemOpt(avatarDescriptor, avatarFXLayer, expressionParameters, boolsToOptimize, intsNFloatsToOptimize, syncSteps, stepDelay, changeDetectionEnabled, wdOptionSelected, currentSavePath);
                             }
                         }
                     }

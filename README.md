@@ -18,9 +18,9 @@ Make your VRChat Avatar's memory more efficient with one click
 
 ## How it works
 
-This system will take your parameters and mark them as unsynced in the parameter list. Instead it will cycle through them and use parameter drivers to sync each parameter. If the change check option is enabled it will use blendtrees to find when a parameter changes and sync that change for faster syncing.
+MemoryOptimizer allows you to surpass the typical parameter memory limits of the VRCSDK, by marking existing parameters as unsynced and using its own set of parameters to cyclically sync the unsynced parameters using parameter drivers. With Change Detection enabled, parameters that that have recently changed in value will be resynced first for faster perceived syncing.
 
-This system does have some limitations. The syncing time will be delayed compared to if you would sync the parameter normally, so it's not ideal for time sensitive applications. Also, with the change check option enabled, the system can get stuck on a certain step of the cycle and not sync the other parameters if a parameter is changing often (see [Change Check](https://github.com/JeTeeS/MemoryOptimizer#change-detection)).
+This does have some limitations, as the syncing time will be delayed compared to if you would sync the parameter normally, so it's not ideal for time-sensitive applications. Also, with the change detection option enabled, the system can get stuck on a certain step of the cycle and not sync the other parameters (See [Change Detection](https://github.com/JeTeeS/MemoryOptimizer#change-detection)).
 
 ## Install guide
 
@@ -32,7 +32,7 @@ This system does have some limitations. The syncing time will be delayed compare
   - See [**How to use**](https://github.com/JeTeeS/MemoryOptimizer#parameters-selection) for what kind of parameters to select
 - Select an amount of syncing steps to generate with
   - See [**Sync Steps**](https://github.com/JeTeeS/MemoryOptimizer#sync-steps), most of the time this can be left at 2 or 3 steps
-- Select whether to enable/disable [Change Check](https://github.com/JeTeeS/MemoryOptimizer#change-detection)
+- Select whether to enable/disable [Change Detection](https://github.com/JeTeeS/MemoryOptimizer#change-detection)
 - Click the `Install` button!
 
 ## How to use
