@@ -37,7 +37,7 @@ This does have some limitations, as the syncing time will be delayed compared to
 - Select whether to enable/disable [Change Detection](https://github.com/JeTeeS/MemoryOptimizer#change-detection)
 - Click the `Install` button!
 
-<img src="https://github.com/JeTeeS/MemoryOptimizer/blob/dev/Media/Preview.gif" height="280" alt="MemoryOptimizer Installation">
+<img src="https://github.com/JeTeeS/MemoryOptimizer/blob/dev/Media/Preview.gif" height="640" alt="MemoryOptimizer Installation">
 
 ## How to use
 
