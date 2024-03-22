@@ -10,7 +10,7 @@
 
 Make your VRChat Avatar's memory more efficient with one click
 
-![MemoryOptimizer](https://github.com/JeTeeS/MemoryOptimizer/blob/dev/Media/Preview.gif)
+![MemoryOptimizer](https://github.com/JeTeeS/MemoryOptimizer/blob/dev/Media/Preview.png)
 
 ### 📦 [Add to VRChat Creator Companion](https://vpm.jetees.dev)
 
@@ -36,6 +36,8 @@ This does have some limitations, as the syncing time will be delayed compared to
   - See [**Sync Steps**](https://github.com/JeTeeS/MemoryOptimizer#sync-steps), most of the time this can be left at 2 or 3 steps
 - Select whether to enable/disable [Change Detection](https://github.com/JeTeeS/MemoryOptimizer#change-detection)
 - Click the `Install` button!
+
+<img src="https://github.com/JeTeeS/MemoryOptimizer/blob/dev/Media/Preview.gif" height="280" alt="MemoryOptimizer Installation">
 
 ## How to use
 
