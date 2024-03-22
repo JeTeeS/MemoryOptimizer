@@ -49,7 +49,9 @@ To select a parameter, simply click the "Optimize" button.
 - 🟡 If it's yellow, the parameter is selected, but will not be optimized.
 - 🟢 If it's green, the parameter will be optimized when you click "Install".
 
- Try changing the amount of [**Sync Steps**](https://github.com/JeTeeS/MemoryOptimizer#sync-steps) to get as many parameters optimized as possible!
+You can also use the "Select all" and "Deselect Prefix" buttons to quickly select the parameters you need.
+
+Try changing the amount of [**Sync Steps**](https://github.com/JeTeeS/MemoryOptimizer#sync-steps) to get as many parameters optimized as possible!
 
 ### Change Detection
 
