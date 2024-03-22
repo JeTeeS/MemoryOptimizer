@@ -80,7 +80,7 @@ namespace JeTeeS.MemoryOptimizer
             return false;
         }
 
-        public static void InstallMemOpt(VRCAvatarDescriptor avatarIn, AnimatorController fxLayer, VRCExpressionParameters expressionParameters, List<MemoryOptimizerListData> boolsToOptimize, List<MemoryOptimizerListData> intsNFloatsToOptimize, int syncSteps, float stepDelay, bool generateChangeCheck, int wdOption, string mainFilePath)
+        public static void InstallMemOpt(VRCAvatarDescriptor avatarIn, AnimatorController fxLayer, VRCExpressionParameters expressionParameters, List<MemoryOptimizerListData> boolsToOptimize, List<MemoryOptimizerListData> intsNFloatsToOptimize, int syncSteps, float stepDelay, bool generateChangeDetection, int wdOption, string mainFilePath)
         {
             string generatedAssetsFilePath = mainFilePath + "/GeneratedAssets/";
             ReadyPath(generatedAssetsFilePath);
@@ -133,21 +133,21 @@ namespace JeTeeS.MemoryOptimizer
 
             CreateLocalRemoteSplit(optimizerState);
 
-            if (generateChangeCheck)
+            if (generateChangeDetection)
                 GenerateDeltas(optimizerState, generatedAssetsFilePath);
 
             AnimatorState localEntryState = optimizerState.localStateMachine.AddState("Entry", new Vector3(0, 100, 0));
             localEntryState.hideFlags = HideFlags.HideInHierarchy;
             localEntryState.motion = optimizerState.oneFrameBuffer;
 
-            CreateStates(optimizerState, syncSteps, stepDelay, generateChangeCheck);
+            CreateStates(optimizerState, syncSteps, stepDelay, generateChangeDetection);
 
             //add transition from local entry to 1st set value
             localEntryState.AddTransition(new AnimatorStateTransition { destinationState = optimizerState.localSetStates[0], exitTime = 0, hasExitTime = true, hasFixedDuration = true, duration = 0f, hideFlags = HideFlags.HideInHierarchy });
 
-            CreateTransitions(optimizerState, syncSteps, stepDelay, generateChangeCheck);
+            CreateTransitions(optimizerState, syncSteps, stepDelay, generateChangeDetection);
 
-            CreateParameterDrivers(optimizerState, syncSteps, generateChangeCheck);
+            CreateParameterDrivers(optimizerState, syncSteps, generateChangeDetection);
 
             bool setWD = true;
             if (wdOption == 0)
@@ -235,7 +235,7 @@ namespace JeTeeS.MemoryOptimizer
             optimizerState.intsNFloatsDifferentials = intsNFloatsDifferentials;
         }
 
-        private static void CreateTransitions(MemoryOptimizerState optimizerState, int syncSteps, float stepDelay, bool generateChangeCheck)
+        private static void CreateTransitions(MemoryOptimizerState optimizerState, int syncSteps, float stepDelay, bool generateChangeDetection)
         {
             List<MemoryOptimizerListData> boolsToOptimize = optimizerState.boolsToOptimize;
             List<MemoryOptimizerListData> intsNFloatsToOptimize = optimizerState.intsNFloatsToOptimize;
@@ -289,7 +289,7 @@ namespace JeTeeS.MemoryOptimizer
                     toWaitTransitions.Last().AddCondition(isZero ? AnimatorConditionMode.If : AnimatorConditionMode.IfNot, 0, indexerParamName + j);
                 }
 
-                if (generateChangeCheck)
+                if (generateChangeDetection)
                 {
                     void SetupLocalResetStateTransitions(string differentialName)
                     {
@@ -347,7 +347,7 @@ namespace JeTeeS.MemoryOptimizer
                 localSetStates[i].AddTransition(new AnimatorStateTransition() { destinationState = localSetStates[(i + 1) % localSetStates.Count], exitTime = stepDelay, hasExitTime = true, hasFixedDuration = true, duration = 0f, hideFlags = HideFlags.HideInHierarchy });
         }
 
-        private static void CreateParameterDrivers(MemoryOptimizerState optimizerState, int syncSteps, bool generateChangeCheck)
+        private static void CreateParameterDrivers(MemoryOptimizerState optimizerState, int syncSteps, bool generateChangeDetection)
         {
             List<AnimatorState> localSetStates = optimizerState.localSetStates;
             List<AnimatorState> localResetStates = optimizerState.localResetStates;
@@ -366,7 +366,7 @@ namespace JeTeeS.MemoryOptimizer
 
                 localSettersParameterDrivers.Add(new ParamDriversAndStates());
                 localSettersParameterDrivers.Last().states.Add(localSetStates[i]);
-                if (generateChangeCheck)
+                if (generateChangeDetection)
                 {
                     localSettersParameterDrivers.Last().states.Add(localResetStates[i]);
 
@@ -456,7 +456,7 @@ namespace JeTeeS.MemoryOptimizer
             optimizerState.remoteSettersParameterDrivers = remoteSettersParameterDrivers;
         }
 
-        private static void CreateStates(MemoryOptimizerState optimizerState, int syncSteps, float stepDelay, bool generateChangeCheck)
+        private static void CreateStates(MemoryOptimizerState optimizerState, int syncSteps, float stepDelay, bool generateChangeDetection)
         {
             string syncStepsBinary = (syncSteps - 1).DecimalToBinary().ToString();
             AnimatorStateMachine localStateMachine = optimizerState.localStateMachine;
@@ -477,9 +477,9 @@ namespace JeTeeS.MemoryOptimizer
                 localSetStates.Last().hideFlags = HideFlags.HideInHierarchy;
                 localSetStates.Last().motion = optimizerState.oneSecBuffer;
 
-                if (generateChangeCheck)
+                if (generateChangeDetection)
                 {
-                    localResetStates.Add(localStateMachine.AddState("Reset Change Check " + (i + 1), AngleRadiusToPos(((float)i / syncSteps + 0.5f) * (float)Math.PI * 2f + ((float)Math.PI * 0.25f), 480f, new Vector3(0, 600, 0))));
+                    localResetStates.Add(localStateMachine.AddState("Reset Change Detection " + (i + 1), AngleRadiusToPos(((float)i / syncSteps + 0.5f) * (float)Math.PI * 2f + ((float)Math.PI * 0.25f), 480f, new Vector3(0, 600, 0))));
                     localResetStates.Last().hideFlags = HideFlags.HideInHierarchy;
                     localResetStates.Last().motion = optimizerState.oneSecBuffer;
 

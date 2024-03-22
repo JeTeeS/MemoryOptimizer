@@ -161,3 +161,10 @@
 ### Changed 
 
 - Readme
+
+## [0.1.17] - 2024-3-22
+
+### Changed
+
+- Name of Change Check to Change Detection
+- Readme
