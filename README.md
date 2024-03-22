@@ -7,10 +7,9 @@
 [![Static Badge](https://img.shields.io/badge/SDK-AvatarSDK3-lightblue?style=for-the-badge&logoColor=lightblue)](https://vrchat.com/home/download)
 [![Discord](https://img.shields.io/discord/875595847688155136?style=for-the-badge&logo=Discord)](https://discord.gg/N7snuJhzkd)
 
-
 Make your VRChat Avatar's memory more efficient with one click
 
-![MemoryOptimizer](https://github.com/JeTeeS/MemoryOptimizer/blob/dev/Media/Preview.png)
+![MemoryOptimizer](https://github.com/JeTeeS/MemoryOptimizer/raw/main/Media/Preview.png)
 
 ### 📦 [Add to VRChat Creator Companion](https://vpm.jetees.dev)
 
@@ -37,7 +36,7 @@ This does have some limitations, as the syncing time will be delayed compared to
 - Select whether to enable/disable [Change Detection](https://github.com/JeTeeS/MemoryOptimizer#change-detection)
 - Click the `Install` button!
 
-<img src="https://github.com/JeTeeS/MemoryOptimizer/blob/dev/Media/Preview.gif" height="640" alt="MemoryOptimizer Installation">
+<img src="https://github.com/JeTeeS/MemoryOptimizer/raw/main/Media/Preview.gif" height="640" alt="MemoryOptimizer Installation">
 
 ## How to use
 
