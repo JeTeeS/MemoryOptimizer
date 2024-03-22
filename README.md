@@ -18,7 +18,9 @@ Make your VRChat Avatar's memory more efficient with one click
 
 ## How it works
 
-- *It just does*
+This system will take your parameters and mark them as unsynced in the parameter list. Instead it will cycle through them and use parameter drivers to sync each parameter. If the change check option is enabled it will use blendtrees to find when a parameter changes and sync that change for faster syncing.
+
+This system does have some limitations. The syncing time will be delayed compared to if you would sync the parameter normally, so it's not ideal for time sensitive applications. Also, with the change check option enabled, the system can get stuck on a certain step of the cycle and not sync the other parameters (See [**Sync Steps**](https://github.com/JeTeeS/MemoryOptimizer#sync-steps)).
 
 ## Install guide
 
