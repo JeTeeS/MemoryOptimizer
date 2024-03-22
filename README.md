@@ -48,7 +48,7 @@ To select a parameter, simply click the `Optimize` button.
 
 - 🔴 If the button is red, that means the parameter is not selected.
 - 🟡 If it's yellow, the parameter is selected, but will not be optimized.
-- 🟢 If it's green, the parameter will be optimized when you click "Install".
+- 🟢 If it's green, the parameter will be optimized when you click `Install`.
 
 You can also use the `Select all` and `Deselect Prefix` buttons to quickly select the parameters you need.
 
