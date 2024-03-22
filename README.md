@@ -10,6 +10,8 @@
 
 Make your VRChat Avatar's memory more efficient with one click
 
+![MemoryOptimizer](https://github.com/JeTeeS/MemoryOptimizer/blob/main/Media/Preview.gif)
+
 ### 📦 [Add to VRChat Creator Companion](https://vpm.jetees.dev)
 
 </div>
