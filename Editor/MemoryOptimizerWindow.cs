@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -61,6 +62,22 @@ namespace JeTeeS.MemoryOptimizer
             //Show existing window instance. If one doesn't exist, make one.
             EditorWindow window = GetWindow(typeof(MemoryOptimizerWindow), false, "Memory Optimizer", true);
             window.minSize = new Vector2(600, 900);
+        }
+
+        private void SavePreset(MemoryOptimizerPreset preset, string filePath)
+        {
+            string json = JsonUtility.ToJson(preset, true);
+            File.WriteAllText(filePath, json);
+        }
+
+        private MemoryOptimizerPreset LoadPreset(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                string json = File.ReadAllText(filePath);
+                return JsonUtility.FromJson<MemoryOptimizerPreset>(json);
+            }
+            return null;
         }
 
         private void OnGUI()
@@ -172,6 +189,43 @@ namespace JeTeeS.MemoryOptimizer
                                 }
                             }
                             GUILayout.Space(5);
+                        }
+                        GUILayout.Space(5);
+                        if (GUILayout.Button("Save Preset"))
+                        {
+                            string filePath = EditorUtility.SaveFilePanel("Save Preset", "", "preset", "json");
+                            if (!string.IsNullOrEmpty(filePath))
+                            {
+                                MemoryOptimizerPreset preset = new MemoryOptimizerPreset
+                                {
+                                    changeDetectionEnabled = changeDetectionEnabled,
+                                    syncSteps = syncSteps,
+                                    stepDelay = stepDelay,
+                                    selectedParameters = paramList.Where(p => p.selected).Select(p => p.param.name).ToList()
+                                };
+                                SavePreset(preset, filePath);
+                            }
+                        }
+
+                        if (GUILayout.Button("Load Preset"))
+                        {
+                            string filePath = EditorUtility.OpenFilePanel("Load Preset", "", "json");
+                            if (!string.IsNullOrEmpty(filePath))
+                            {
+                                MemoryOptimizerPreset preset = LoadPreset(filePath);
+                                if (preset != null)
+                                {
+                                    changeDetectionEnabled = preset.changeDetectionEnabled;
+                                    syncSteps = preset.syncSteps;
+                                    stepDelay = preset.stepDelay;
+
+                                    foreach (MemoryOptimizerMain.MemoryOptimizerListData param in paramList)
+                                    {
+                                        param.selected = preset.selectedParameters.Contains(param.param.name);
+                                    }
+                                    OnChangeUpdate();
+                                }
+                            }
                         }
                         GUILayout.Space(5);
                         if (avatarDescriptor != null && avatarFXLayer != null && expressionParameters != null)
