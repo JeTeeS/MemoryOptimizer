@@ -23,6 +23,7 @@ namespace JeTeeS.MemoryOptimizer
         private const string unlockSyncStepsEPKey = prefKey + "UnlockSyncSteps";
         private const string backUpModeEPKey = prefKey + "BackUpMode";
         private const string savePathPPKey = prefKey + "SavePath";
+        private const int maxUnsyncedParams = 8192;
 
         private bool unlockSyncSteps = false;
         private int backupMode = 0;
@@ -368,11 +369,11 @@ namespace JeTeeS.MemoryOptimizer
                             GUI.backgroundColor = Color.red;
                             GUILayout.Button("No FX Layer Selected!");
                         }
-                        else if (expressionParameters.parameters.Length + (installationBoolSyncers + installationIntSyncers + installationIndexers) > 255)
+                        else if (expressionParameters.parameters.Length + (installationBoolSyncers + installationIntSyncers + installationIndexers) >= maxUnsyncedParams)
                         {
                             GUI.enabled = false;
                             GUI.backgroundColor = Color.red;
-                            GUILayout.Button("Generated params will exceed 256!");
+                            GUILayout.Button($"Generated params will exceed {maxUnsyncedParams}!");
                         }
                         else
                         {

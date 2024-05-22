@@ -168,3 +168,9 @@
 
 - Name of Change Check to Change Detection
 - Readme
+
+## [0.1.18] - 2024-5-22
+
+### Changed
+
+- Max unsynced parameters now match the vrchat limit again
